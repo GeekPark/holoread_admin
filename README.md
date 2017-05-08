@@ -1,5 +1,7 @@
 # shareading Admin
 
+[![Build Status](https://travis-ci.org/GeekPark/shareading-admin.svg?branch=master)](https://travis-ci.org/GeekPark/shareading-admin)
+[![Code Climate](https://codeclimate.com/github/GeekPark/shareading-admin/badges/gpa.svg)](https://codeclimate.com/github/GeekPark/shareading-admin)
 
 ## Build Setup
 
