@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import * as api from '../stores/api'
+import api from '../stores/api'
 export default {
   name: 'vheader',
   computed: {
@@ -29,10 +29,7 @@ export default {
     handleSelect(key, keyPath) {
       if (key === 'logout') {
         const _this = this
-        api._post({
-          url: 'account/logout',
-          data: {}
-        }).then((result) => {
+        api.post('/admin/account/logout').then((result) => {
           console.log(result);
           if (result.status === 200) {
             localStorage.setItem('email', null);
