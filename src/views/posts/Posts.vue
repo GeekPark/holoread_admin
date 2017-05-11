@@ -1,5 +1,7 @@
 <template lang="jade">
 #admin-articles.admin
+  .title
+    h1 {{$route.meta.title}}
   el-table(:data='listData.list',)
     el-table-column(type="index", width="100")
     el-table-column(prop='_id', label='id', width="100")

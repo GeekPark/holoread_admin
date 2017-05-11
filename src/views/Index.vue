@@ -50,12 +50,6 @@ export default {
       },{
         title: '用户管理',
         url: '/users',
-      },{
-        title: '广告管理',
-        url: '/ads',
-      },{
-        title: '微信管理',
-        url: '/wechats',
       }],
       quickly: [{
         title: '极客公园',

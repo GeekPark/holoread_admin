@@ -1,12 +1,9 @@
 <template lang="jade">
 #vsider
   el-row.tac
-    router-link(to="/")
-      img(src="../assets/imgs/copyright.png")
     el-col(:span='8')
-      el-menu.el-menu-vertical-demo(router=true, @open='handleOpen', @close='handleClose', theme="dark")
-        el-menu-item(index='/') 仪表盘
-        el-menu-item(index='/charts') 图表
+      el-menu.el-menu-vertical-demo(router=true, @open='handleOpen', @close='handleClose', theme="light")
+        //- el-menu-item(index='/charts') 图表
         el-submenu(index='/1')
           template(slot='title')
             | 用户管理
@@ -16,7 +13,7 @@
           template(slot='title')
             | 文章
           el-menu-item(index='/posts')  文章列表
-          el-menu-item(index='/posts/new?content_type=markdown') 添加文章
+          el-menu-item(index='/posts/edit?content_type=markdown') 编辑文章
 </template>
 
 <script>

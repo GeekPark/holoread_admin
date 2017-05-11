@@ -5,10 +5,10 @@ import config      from './config'
 import Index       from './views/Index.vue'
 import Charts      from './views/Charts.vue'
 import Errors      from './views/Errors.vue'
-import Timeline    from './views/Timeline.vue'
+import Login       from './views/Login.vue'
 
 import Posts       from './views/posts/Posts.vue'
-import AddPost     from './views/posts/AddPost.vue'
+import EditPost    from './views/posts/EditPost.vue'
 
 
 import Users       from './views/users/Users.vue'
@@ -19,7 +19,6 @@ import Comments    from './views/comments/Comments.vue'
 
 Vue.use(VueRouter)
 
-const base = config.title
 
 const router = new VueRouter({
   mode: 'history',
@@ -27,43 +26,48 @@ const router = new VueRouter({
     { path: '/',
       name: 'index',
       component: Index,
-      meta: {title: `${base}首页`}
+      meta: {title: '首页'}
+    },
+    { path: '/login',
+      name: 'login',
+      component: Login,
+      meta: {title: '登录'}
     },
 
     { path: '/charts',
       name: 'charts',
       component: Charts,
-      meta: {title: `${base}Charts`}
+      meta: {title: 'Charts'}
     },
 
     { path: '/users',
       name: 'users',
       component: Users,
-      meta: {title: `${base}用户`}
+      meta: {title: '用户'}
     },
     { path: '/users/new',
       name: 'users-new',
       component: AddUser,
-      meta: {title: `${base}添加用户`}
+      meta: {title: '添加用户'}
     },
 
     { path: '/posts',
       name: 'posts',
       component: Posts,
-      meta: {title: `${base}文章`}
+      meta: {title: '文章'}
     },
-    { path: '/posts/new',
-      name: 'posts-new',
-      component: AddPost,
-      meta: {title: `${base}添加文章`}
+    { path: '/posts/edit',
+      name: 'posts-edit',
+      component: EditPost,
+      meta: {title: '编辑文章'}
     },
     { path: '/comments',
       component: Comments,
-      meta: {title: `${base}评论`}
+      meta: {title: '评论'}
     },
     { path: '*',
       component: Errors,
-      meta: {title: `${base}Error`}
+      meta: {title: 'Error'}
     }
   ]
 })

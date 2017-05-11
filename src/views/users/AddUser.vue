@@ -1,9 +1,14 @@
 <template lang="jade">
 #add-user.admin
+  .title
+    h1 {{$route.meta.title}}
   el-form(:model='form', label-width='100px')
     el-form-item(label='用户级别*')
       el-select(v-model='form.permission', placeholder='请选择权限', size="large" multiple)
-        el-option(v-for='item in options', :label='item.label', :value='item.value')
+        el-option(v-for='item in options',
+                  :label='item.label',
+                  :value='item.value',
+                  :key="item.value")
     el-form-item(label='昵称*', placeholder='必填')
       el-input(v-model='form.nickname', auto-complete='off')
     el-form-item(label='公司')
@@ -15,7 +20,7 @@
     el-form-item(label='微信')
       el-input(v-model='form.wechat')
     el-form-item(label='邮箱')
-      el-input(v-model='form.email')
+      el-input(v-model='form.email', placeholder='登录后台需要')
     el-form-item(label='密码')
       el-input(v-model='form. password', placeholder='登录后台需要')
     el-form-item(label='一句话简介')
@@ -104,7 +109,7 @@ function update (_this = {}) {
   api.put(`/admin/users/${_this.id}`, _this.form).then((result) => {
     _this.$message.success('success')
     _this.form = initForm()
-    _this.$router.push('users/new')
+    _this.$router.push('/users/new')
   }).catch((err) => {
      _this.$message.error(err.toString())
   })

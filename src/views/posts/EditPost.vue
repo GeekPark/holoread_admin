@@ -1,25 +1,23 @@
 <template lang="jade">
-#add-post.admin
+#edit-post.admin
+  .title
+    h1 {{$route.meta.title}}
   el-form(ref='form', :model='form', label-width='80px')
     el-form-item(label='切换')
-      el-select(v-model='form.content_type', placeholder='请选择')
+      el-select(v-model='content_type', placeholder='请选择')
         el-option(v-for='item in content_types',
                   :label='item.title',
-                  :value='item.val')
+                  :value='item.val',
+                  :key="item.val")
     el-form-item(label='标题')
-      el-input(placeholder='请输入标题 必填', v-model='form.title')
-    el-form-item(label='摘要')
-      el-input(type='textarea',
-               placeholder='请输入摘要 可选',
-               v-model='form.abstract')
+      el-input(placeholder='请输入标题 必填', v-model='form.edited_title')
     el-form-item(label='正文')
       vmarkdown(v-if='$route.query.content_type !=="html"'
               v-bind:markdown='form.markdown')
       veditor#veditor(style="height:400px;max-height:500px;", v-else)
     el-form-item(label='')
       el-button(type='primary', @click='onSubmit') 发布
-      el-button(type='success', @click='onSubmit') 存草稿
-      el-button(type='danger', @click='onSubmit') 关闭
+      el-button(type='danger', @click="$router.push('/posts')") 关闭
 </template>
 
 <script>
@@ -29,69 +27,50 @@ import api      from '../../stores/api'
 
 export default {
   data () {
-    const content_type = this.$route.query.content_type || '';
     return {
       form: {
-        title:           '',
-        abstract:        '',
-        content_type:    content_type,
-        content_source:  '',
-        tags:            [],
-        column_id:       null,
-        picture:         '',
-        author_ids:      [],
-        auto_publish_at: null,
-        state:           'published',
-        meta:            {},
+        edited_title: '',
+        edited_content: ''
       },
+      content_type: 'markdown',
       content_types: [{
         title: '富文本',
         val: 'html',
       },{
         title: 'markdown',
         val: 'markdown'
-      },{
-        title: 'plain',
-        val: 'plain'
-      }],
+      }]
+    }
+  },
+  computed: {
+    id () {
+      return this.$route.query.id
     }
   },
   methods: {
     onSubmit() {
-      if (this.$route.query.id) {
-        updatePost(this)
-      } else {
-        createPost(this)
-      }
-    }
-  },
-  watch: {
-    'form.content_type': function (val) {
-       this.$router.push(`${this.$route.path}?content_type=${val}&id=${this.$route.query.id}`)
-       addContent(this, val)
+      updatePost(this)
     }
   },
   mounted () {
-     if (this.$route.query.id) {
-       getPost(this)
-     }
+    this.id && getPost(this)
   }
 }
 
 function getContent(_this) {
   if (_this.$route.query.content_type === 'html') {
-    _this.form.content_source = _this.$store.state.htmlEditor.$txt.html()
+    _this.form.edited_content = _this.$store.state.htmlEditor.$text.html()
   } else {
-    _this.form.content_source = _this.$store.state.markdownEditor.value()
+    _this.form.edited_content = _this.$store.state.markdownEditor.value()
   }
 }
 
 function addContent(_this, val) {
   setTimeout(() => {
     if (val === 'html') {
-      _this.$store.state.htmlEditor.$txt.html(_this.form.content_source)
+      _this.$store.state.htmlEditor.$txt.html(_this.form.edited_content)
     } else {
-      _this.$store.state.markdownEditor.value(_this.form.content_source)
+      _this.$store.state.markdownEditor.value(_this.form.edited_content)
     }
   },100)
 }
@@ -99,16 +78,6 @@ function addContent(_this, val) {
 function updatePost(_this) {
   getContent(_this)
   api.put(`admin/posts/${_this.$route.query.id}`, _this.form)
-  .then((result) => {
-     _this.$message.success('success')
-  }).catch((err) => {
-     _this.$message.error(err.toString())
-  })
-}
-
-function createPost(_this) {
-  getContent(_this)
-  api.post('admin/posts', _this.form)
   .then((result) => {
      _this.$message.success('success')
   }).catch((err) => {
@@ -130,8 +99,7 @@ function getPost(_this) {
 </script>
 
 <style lang="stylus">
-#add-post
-
+#edit-post
   .el-input--mini
       width 200px !important
 

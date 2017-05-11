@@ -1,5 +1,6 @@
 export default {
-  editor: {},
+  htmlEditor: {},
+  markdownEditor: {},
   isLoading: false,
   roles: [{
     label: '游客',
