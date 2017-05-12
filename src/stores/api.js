@@ -24,6 +24,7 @@ axios.interceptors.request.use(function (config) {
   store.commit('LOADING', true)
   return config
 }, function (error) {
+  store.commit('LOADING', false)
   return Promise.reject(error)
 })
 
@@ -32,6 +33,7 @@ axios.interceptors.response.use(function (response) {
   store.commit('LOADING', false)
   return response
 }, function (error) {
+  store.commit('LOADING', false)
   return Promise.reject(error)
 })
 
