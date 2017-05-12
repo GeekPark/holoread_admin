@@ -3,10 +3,9 @@
   el-row.tac
     el-col(:span='8')
       el-menu.el-menu-vertical-demo(router=true, @open='handleOpen', @close='handleClose', theme="light")
-        //- el-menu-item(index='/charts') 图表
         el-submenu(index='/1')
           template(slot='title')
-            | 用户管理
+            | 用户
           el-menu-item(index='/users') 用户列表
           el-menu-item(index='/users/new') 添加用户
         el-submenu(index='/2')
@@ -14,6 +13,10 @@
             | 文章
           el-menu-item(index='/posts')  文章列表
           el-menu-item(index='/posts/edit?content_type=markdown') 编辑文章
+        el-submenu(index='/3')
+          template(slot='title')
+            | 日志
+          el-menu-item(index='/logs')  日志列表
 </template>
 
 <script>

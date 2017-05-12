@@ -22,12 +22,8 @@ export default (options) => {
       console.log(`每页 ${index} 条`)
     },
     handleCurrentChange(index, val) {
-      this.currentPage = index
-      fetch(this, {page: index}, options.url)
-      console.log(`当前页: ${index}`)
-    },
-    handleFilter() {
-
+      fetch(this, {start: index - 1}, options.url)
+      console.log(`当前页: ${index - 1}`)
     },
     handleDestroy(index, val, list) {
       api.delete(`${options.url}/${val._id}`, {}).then((result) => {
@@ -40,7 +36,7 @@ export default (options) => {
   }}, methods)
 
   data = Object.assign({
-    currentPage: 1,
+    currentPage: 0,
     listData: {
       meta: {
         total_count: 0,
@@ -58,7 +54,7 @@ export default (options) => {
     methods: methods,
     watch: watch,
     beforeMount () {
-      fetch(this, {page: this.currentPage}, options.url)
+      fetch(this, {start: this.currentPage}, options.url)
     }
   }
   return base

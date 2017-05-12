@@ -3,6 +3,7 @@
   .title
     h1 {{$route.meta.title}}
     el-button(type='text', @click="$router.push('/users/new')") 添加用户
+    vsearch(type='User', kw='nickname', :cb='search')
   el-table(:data='listData.list',)
     el-table-column(type="expand")
       template(scope="props", label-width='150px')
@@ -17,22 +18,6 @@
           el-form-item(label="职位: ") {{props.row.title || '未填写'}}
           el-form-item(label="创建于: ") {{props.row.created_at || '未填写'}}
           el-form-item(label="更新于: ") {{props.row.updated_at || '未填写'}}
-          //- wechat:""
-          //- _id:"59113b5cd2c0b878b6caef1f"
-          //- email:""
-          //- createdAt:"2017-05-09T03:45:32.180Z"
-          //- company:""
-          //- phone:""
-          //- created_at:"2017-05-09 11:45:32"
-          //- nickname:"ewww4442"
-          //- openid:""
-          //- password:""
-          //- permission:Array[1]
-          //- sign:""
-          //- state:-1
-          //- title:""
-          //- updatedAt:"2017-05-11T05:42:22.446Z"
-          //- updated_at:"2017-05-11 13:42:22"
     el-table-column(type="index", width="100")
     el-table-column(prop='nickname', label='nickname')
     el-table-column(prop='status', label=' 状态', width="100")
@@ -60,6 +45,9 @@ const vm = Base({
   methods: {
     handleEdit (index, row) {
       this.$router.push(`users/new?id=${row._id}`)
+    },
+    search (val) {
+      this.listData = val
     }
   }
 });
@@ -67,12 +55,4 @@ export default vm
 </script>
 
 <style lang="stylus" scoped>
-.el-table, .el-pagination
-  margin-top 20px
-.el-input
-  width 40%
-.add-btn
-  margin-left 30px
-.el-table
-  margin-top 30px
 </style>

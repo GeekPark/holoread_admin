@@ -20,7 +20,7 @@
   el-row(:gutter="20")
     el-col(v-for='item in sections',
            :key='item.id',
-           :span='Math.floor((24 / sections.length))')
+           :span='Math.floor((24 / sections.length / 2))')
       .grid-content.bg-purple
         router-link(:to='item.url').a-title-text.center {{item.title}}
   el-row
@@ -29,12 +29,9 @@
   el-row(:gutter="20")
     el-col(v-for='item in quickly',
            :key='item.id',
-           :span='Math.floor((24 / sections.length))')
+           :span='Math.floor((24 / sections.length / 2))')
       .grid-content.bg-purple
         a(:href='item.url', target='_blank').a-title-text.center {{item.title}}
-  el-row
-    el-col(:span='24')
-      h1 图表
 </template>
 
 <script>
@@ -60,9 +57,6 @@ export default {
       },{
         title: '极光推送',
         url: 'https://www.jiguang.cn/dev/#/app/list#dev',
-      },{
-        title: 'Innoawards',
-        url: '',
       },{
         title: 'Github',
         url: 'https://github.com/geekpark/gpk_admin',
@@ -106,6 +100,8 @@ export default {
     overflow hidden
   h1
     margin-bottom 20px
+
+
   p
     line-height 25px
     font-size 1.7rem

@@ -10,6 +10,8 @@ import Login       from './views/Login.vue'
 import Posts       from './views/posts/Posts.vue'
 import EditPost    from './views/posts/EditPost.vue'
 
+import Logs        from './views/logs/Logs.vue'
+
 
 import Users       from './views/users/Users.vue'
 import AddUser     from './views/users/AddUser.vue'
@@ -51,6 +53,12 @@ const router = new VueRouter({
       meta: {title: '添加用户'}
     },
 
+    { path: '/logs',
+      name: 'logs',
+      component: Logs,
+      meta: {title: ' 日志'}
+    },
+
     { path: '/posts',
       name: 'posts',
       component: Posts,
@@ -60,10 +68,6 @@ const router = new VueRouter({
       name: 'posts-edit',
       component: EditPost,
       meta: {title: '编辑文章'}
-    },
-    { path: '/comments',
-      component: Comments,
-      meta: {title: '评论'}
     },
     { path: '*',
       component: Errors,

@@ -84,6 +84,13 @@ html, body
   left 0
   box-shadow 0px 2px 10px 3px rgba(0,0,0,0.15);
 
+.title
+  float left
+  width 100%
+  h1
+    display inline-block
+    margin-right 20px
+
 .el-pagination
   text-align left
 

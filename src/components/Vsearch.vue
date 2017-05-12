@@ -2,41 +2,33 @@
 #vsearch
   el-input(placeholder='请输入搜索内容',
            icon='search',
-           v-model='searchVal',
-           :on-icon-click='handleSearch')
+           v-model='value',
+           :on-icon-click='handleSearch',
+           @keyup.enter='handleSearch')
 </template>
 
 <script>
-import * as api from '../stores/api'
+import api from '../stores/api'
 export default {
   name: 'vsearch',
   data () {
     return {
-      searchVal: ''
+      value: ''
     }
   },
-  props: ['model', 'searchKey', 'start'],
+  props: ['type', 'kw', 'cb'],
   methods: {
     handleSearch() {
-      const _this = this
-      api._get({
-        url: 'search',
-        data: {
-          model: _this.model,
-          searchKey: _this.searchKey,
-          searchVal: _this.searchVal,
-          start: _this.start || 0,
+      api.get('/admin/search', {
+        params: {
+          type: this.type,
+          kw: this.kw,
+          value: this.value
         }
       }).then((result) => {
-        console.log(result);
-        if (result.status === 200) {
-          _this.$store.commit('SET_ITEM', {
-            key: 'adminItems',
-            val: result.data.data
-          })
-        }
+        this.cb(result.data.data)
       }).catch((err) => {
-        console.log(err);
+        this.$message.error(err.toString())
       })
     }
   },
@@ -45,9 +37,8 @@ export default {
 }
 </script>
 
-<style lang="stylus" scoped>
-.el-input
-  width 60%
-  float left
+<style lang="stylus">
+#vsearch
+  float right
 </style>
 
