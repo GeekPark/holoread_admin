@@ -15,6 +15,8 @@
       el-input(placeholder='请输入标题 必填', v-model='form.edited_title')
     el-form-item(label='显示正文')
       veditor#veditor(style="height:400px;max-height:500px;")
+    el-form-item(label='摘要')
+      el-input(type='textarea', placeholder='', v-model='form.summary')
     el-form-item(label='Source')
       el-input(placeholder='', v-model='form.source')
     el-form-item(label='URL')
@@ -39,6 +41,7 @@ export default {
         edited_content: '',
         origin_content: '',
         trans_content:  '',
+        summary:        '',
       }
     }
   },
