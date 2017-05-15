@@ -7,15 +7,18 @@
       .reference
         span.cn.title {{form.origin_title}}
         span.en.title &nbsp {{form.trans_title}}
-    el-form-item(label='正文')
+    el-form-item(label='参考正文')
       .reference
           .cn.content(v-html='form.origin_content')
-
           .en.content(v-html='form.trans_content') &nbsp
-    el-form-item(label='标题')
+    el-form-item(label='显示标题')
       el-input(placeholder='请输入标题 必填', v-model='form.edited_title')
-    el-form-item(label='正文')
+    el-form-item(label='显示正文')
       veditor#veditor(style="height:400px;max-height:500px;")
+    el-form-item(label='Source')
+      el-input(placeholder='', v-model='form.source')
+    el-form-item(label='URL')
+      el-input(placeholder='', v-model='form.url')
     el-form-item(label='')
       el-button(type='primary', @click='onSubmit') 发布
       el-button(type='danger', @click="$router.push('/posts')") 关闭
@@ -30,9 +33,9 @@ export default {
   data () {
     return {
       form: {
-        edited_title: '',
-        origin_title:   '',
-        trans_title:    '',
+        edited_title:   '',
+        origin_title:   'nothing',
+        trans_title:    '无标题',
         edited_content: '',
         origin_content: '',
         trans_content:  '',
