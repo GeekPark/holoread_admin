@@ -12,7 +12,7 @@
           template(slot='title')
             | 文章
           el-menu-item(index='/posts')  文章列表
-          el-menu-item(index='/posts/edit?content_type=markdown') 编辑文章
+          el-menu-item(index='/posts/edit') 编辑文章
         el-submenu(index='/3')
           template(slot='title')
             | 日志

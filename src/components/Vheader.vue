@@ -33,7 +33,6 @@ export default {
         api.post('/admin/account/logout').then((result) => {
           if (result.status === 200) {
             localStorage.setItem('email', null);
-            localStorage.setItem('user', null);
             this.$router.push('/login');
           }
         })
@@ -42,9 +41,9 @@ export default {
       }
     }
   },
-  beforeMount () {
-    let email = localStorage.getItem('email');
-    this.$set(this, 'email', email);
+  mounted () {
+    this.email = localStorage.getItem('email') || '未登录';
+
   }
 }
 </script>
