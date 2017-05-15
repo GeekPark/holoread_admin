@@ -3,18 +3,22 @@
   .title
     h1 {{$route.meta.title}}
   el-form(ref='form', :model='form', label-width='80px')
-    el-form-item(label='切换')
-      el-select(v-model='content_type', placeholder='请选择')
-        el-option(v-for='item in content_types',
-                  :label='item.title',
-                  :value='item.val',
-                  :key="item.val")
-    el-form-item(label='标题')
+    el-form-item(label='参考标题')
+      .reference
+        span.cn.title {{form.origin_title}}
+        span.en.title &nbsp {{form.trans_title}}
+    el-form-item(label='参考正文')
+      .reference
+          .cn.content(v-html='form.origin_content')
+          .en.content(v-html='form.trans_content') &nbsp
+    el-form-item(label='显示标题')
       el-input(placeholder='请输入标题 必填', v-model='form.edited_title')
-    el-form-item(label='正文')
-      vmarkdown(v-if='$route.query.content_type !=="html"'
-              v-bind:markdown='form.markdown')
-      veditor#veditor(style="height:400px;max-height:500px;", v-else)
+    el-form-item(label='显示正文')
+      veditor#veditor(style="height:400px;max-height:500px;")
+    el-form-item(label='Source')
+      el-input(placeholder='', v-model='form.source')
+    el-form-item(label='URL')
+      el-input(placeholder='', v-model='form.url')
     el-form-item(label='')
       el-button(type='primary', @click='onSubmit') 发布
       el-button(type='danger', @click="$router.push('/posts')") 关闭
@@ -29,17 +33,13 @@ export default {
   data () {
     return {
       form: {
-        edited_title: '',
-        edited_content: ''
-      },
-      content_type: 'markdown',
-      content_types: [{
-        title: '富文本',
-        val: 'html',
-      },{
-        title: 'markdown',
-        val: 'markdown'
-      }]
+        edited_title:   '',
+        origin_title:   'nothing',
+        trans_title:    '无标题',
+        edited_content: '',
+        origin_content: '',
+        trans_content:  '',
+      }
     }
   },
   computed: {
@@ -50,6 +50,7 @@ export default {
   methods: {
     onSubmit() {
       updatePost(this)
+      // createPost(this)
     }
   },
   mounted () {
@@ -58,26 +59,28 @@ export default {
 }
 
 function getContent(_this) {
-  if (_this.$route.query.content_type === 'html') {
-    _this.form.edited_content = _this.$store.state.htmlEditor.$text.html()
-  } else {
-    _this.form.edited_content = _this.$store.state.markdownEditor.value()
-  }
+    _this.form.edited_content = _this.$store.state.htmlEditor.$txt.html()
 }
 
 function addContent(_this, val) {
   setTimeout(() => {
-    if (val === 'html') {
-      _this.$store.state.htmlEditor.$txt.html(_this.form.edited_content)
-    } else {
-      _this.$store.state.markdownEditor.value(_this.form.edited_content)
-    }
+    _this.$store.state.htmlEditor.$txt.html(_this.form.edited_content)
   },100)
 }
 
 function updatePost(_this) {
   getContent(_this)
-  api.put(`admin/posts/${_this.$route.query.id}`, _this.form)
+  api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
+  .then((result) => {
+     _this.$message.success('success')
+  }).catch((err) => {
+     _this.$message.error(err.toString())
+  })
+}
+
+function createPost(_this) {
+  getContent(_this)
+  api.post('admin/articles', _this.form)
   .then((result) => {
      _this.$message.success('success')
   }).catch((err) => {
@@ -86,11 +89,10 @@ function updatePost(_this) {
 }
 
 function getPost(_this) {
-  api.get(`admin/posts/${_this.$route.query.id}`)
+  api.get(`admin/articles/${_this.$route.query.id}`)
   .then((result) => {
-    result.data.post.column_id = result.data.post.column.id
-    _this.form = result.data.post
-    addContent(_this, _this.form.content_type)
+    _this.form = result.data.data
+    addContent(_this)
 
   }).catch((err) => {
      _this.$message.error(err.toString())
@@ -121,5 +123,23 @@ function getPost(_this) {
   border 1px dashed #d9d9d9
   padding 10px
   cursor pointer
+
+.reference
+  position relative
+  clear both
+  width 100%
+
+  .cn, .en
+    width calc(50% - 2px)
+    word-wrap: break-word;
+    word-break: normal;
+    display inline
+    float left
+    border 1px solid #E6E6E6
+
+  .content
+    min-height 200px
+    max-height 400px
+    overflow-y scroll
 
 </style>

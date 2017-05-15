@@ -28,14 +28,15 @@ export default {
   data () {
     return {
       form: {
-        email: 'eric',
-        password: 'eric'
+        email: '',
+        password: ''
       }
     }
   },
   methods: {
     submit () {
       api.post('admin/account/login', this.form).then((result) => {
+        localStorage.setItem('email', result.data.data.email);
         this.$message.success('success')
         this.$router.push('/')
       }).catch((err) => {
