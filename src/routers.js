@@ -16,9 +16,6 @@ import Logs        from './views/logs/Logs.vue'
 import Users       from './views/users/Users.vue'
 import AddUser     from './views/users/AddUser.vue'
 
-import Comments    from './views/comments/Comments.vue'
-
-
 Vue.use(VueRouter)
 
 
