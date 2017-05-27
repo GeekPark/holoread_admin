@@ -21,19 +21,21 @@ const axios = require('axios').create({
 // Add a request interceptor
 axios.interceptors.request.use(function (config) {
   // config.params = Object.assign({}, config.params)
-  store.commit('LOADING', true)
+  // store.commit('LOADING', true)
+  config.params = Object.assign({}, config.params)
+  if (config.params.start > 0) {config.params.start = config.params.start - 1}
   return config
 }, function (error) {
-  store.commit('LOADING', false)
+  // store.commit('LOADING', false)
   return Promise.reject(error)
 })
 
 // Add a response interceptor
 axios.interceptors.response.use(function (response) {
-  store.commit('LOADING', false)
+  // store.commit('LOADING', false)
   return response
 }, function (error) {
-  store.commit('LOADING', false)
+  // store.commit('LOADING', false)
   return Promise.reject(error)
 })
 

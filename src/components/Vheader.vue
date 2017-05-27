@@ -7,10 +7,8 @@
                        mode='horizontal',
                        @select='handleSelect')
     el-menu-item(index='email') {{email}}
-    el-submenu(index='profile')
-      template(slot='title') 个人中心
-      el-menu-item(index='profile') 账号
-      el-menu-item(index='logout') 登出
+    el-menu-item(index='logout') {{state}}
+
 </template>
 
 <script>
@@ -18,6 +16,11 @@ import api from '../stores/api'
 export default {
   name: 'vheader',
   computed: {
+    state () {
+      return this.email === '' ||
+             this.email === null ||
+             this.email === 'null' ? '登录'  :  '退出'
+    }
   },
   data () {
     return {
@@ -43,7 +46,6 @@ export default {
   },
   mounted () {
     this.email = localStorage.getItem('email') || '未登录';
-
   }
 }
 </script>

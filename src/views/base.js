@@ -1,14 +1,5 @@
 import api from '../stores/api'
 
-function fetch (_this = {}, params = {}, url = '') {
-  api.get(url, {params: params}).then((result) => {
-    _this.listData = result.data.data
-  }).catch((err) => {
-    console.log(err)
-     _this.$message.error(err.toString())
-  })
-}
-
 export default (options) => {
 
   let {
@@ -22,8 +13,8 @@ export default (options) => {
       console.log(`每页 ${index} 条`)
     },
     handleCurrentChange(index, val) {
-      fetch(this, {start: index - 1}, options.url)
-      console.log(`当前页: ${index - 1}`)
+      this.params.start = index;
+      this.fetch();
     },
     handleDestroy(index, val, list) {
       api.delete(`${options.url}/${val._id}`, {}).then((result) => {
@@ -33,10 +24,23 @@ export default (options) => {
         console.log(err)
         this.$message.error(err.toString())
       })
-  }}, methods)
+    },
+    fetch() {
+      api.get(options.url, {params: this.params}).then((result) => {
+        this.listData = result.data.data
+      }).catch((err) => {
+        console.log(err)
+         this.$message.error(err.toString())
+      })
+    }
+  }, methods)
+  watch = Object.assign({
+  }, watch)
 
   data = Object.assign({
-    currentPage: 0,
+    params: {
+      start: 1,
+    },
     listData: {
       meta: {
         total_count: 0,
@@ -54,7 +58,7 @@ export default (options) => {
     methods: methods,
     watch: watch,
     beforeMount () {
-      fetch(this, {start: this.currentPage}, options.url)
+      this.fetch()
     }
   }
   return base

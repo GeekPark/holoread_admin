@@ -3,7 +3,6 @@ import VueRouter   from 'vue-router'
 import config      from './config'
 
 import Index       from './views/Index.vue'
-import Charts      from './views/Charts.vue'
 import Errors      from './views/Errors.vue'
 import Login       from './views/Login.vue'
 
@@ -31,12 +30,6 @@ const router = new VueRouter({
       name: 'login',
       component: Login,
       meta: {title: '登录'}
-    },
-
-    { path: '/charts',
-      name: 'charts',
-      component: Charts,
-      meta: {title: 'Charts'}
     },
 
     { path: '/users',

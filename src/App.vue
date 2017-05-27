@@ -142,31 +142,8 @@ html, body
 .row-bg
   padding 10px 0
   background-color #f9fafc
-
-
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section
-  display block
-
-body
-  line-height 1
-
-blockquote, q
-  quotes none
-
-blockquote:before, blockquote:after,
-
-q:before, q:after
-  content ''
-  content none
-
-table
-  border-collapse collapse
-  border-spacing 0
-
 html
   font-size 62.5%
-
 a
   text-decoration none
   cursor pointer
