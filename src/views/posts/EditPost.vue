@@ -11,15 +11,15 @@
       .reference
           .cn.content(v-html='form.origin_content')
           .en.content(v-html='form.trans_content') &nbsp
-    el-form-item(label='显示标题')
+    el-form-item(label='显示标题', required)
       el-input(placeholder='请输入标题 必填', v-model='form.edited_title')
-    el-form-item(label='显示正文')
+    el-form-item(label='显示正文', required)
       veditor#veditor(style="height:400px;max-height:500px;")
     el-form-item(label='摘要')
       el-input(type='textarea', placeholder='', v-model='form.summary')
-    el-form-item(label='Source')
+    el-form-item(label='Source', required)
       el-input(placeholder='', v-model='form.source')
-    el-form-item(label='URL')
+    el-form-item(label='URL', required)
       el-input(placeholder='', v-model='form.url')
     el-form-item(label='')
       el-button(type='primary', @click='onSubmit') 发布
@@ -133,12 +133,13 @@ function getPost(_this) {
   width 100%
 
   .cn, .en
-    width calc(50% - 2px)
+    width calc(50% - 22px)
     word-wrap: break-word;
     word-break: normal;
     display inline
     float left
     border 1px solid #E6E6E6
+    padding 0 10px
 
   .content
     min-height 200px
