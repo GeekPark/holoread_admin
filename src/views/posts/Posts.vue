@@ -7,7 +7,7 @@
     el-table-column(type="index", width="100")
     el-table-column(prop='edited_title', label='标题')
     el-table-column(prop='order', label=' 状态', width="100")
-    el-table-column(prop='created_at', label='创建时间', width="200")
+    el-table-column(prop='published', label='创建时间', width="200")
     el-table-column(label='操作', width='250')
       template(scope='scope')
         el-button(size='small',
@@ -21,7 +21,7 @@
                   @click='handleDelete(scope.$index, scope.row)') 删除
   el-pagination(@size-change='handleSizeChange',
                 @current-change='handleCurrentChange',
-                :current-page='params.start',
+                :current-page='currentPage',
                 :page-size='listData.meta.limit_value',
                 layout='total, prev, pager, next',
                 :total='listData.meta.total_count')
@@ -39,26 +39,40 @@
 </template>
 
 <script>
-
-import Base from '../base'
 import api from 'stores/api'
-const vm = Base({
-  url: 'admin/articles',
-  data: {
-    previewVisible: false,
-    stateVisible: false,
-    currentRow: {
-    },
-    options: [{
-      value: -1,
-      label: '隐藏'
-    }, {
-      value: 0,
-      label: '正常显示'
-    }, {
-      value: 1,
-      label: '编辑推荐'
-    }],
+import tools from '../../tools'
+const options = {
+  url: 'admin/articles'
+}
+export default {
+  data() {
+    return {
+      params: {
+        last: null,
+        first: null,
+        limit: 20,
+      },
+      listData: {
+        meta: {
+          total_count: 0,
+          limit_value: 0
+        }
+      },
+      previewVisible: false,
+      stateVisible: false,
+      currentRow: {},
+      currentPage: 1,
+      options: [{
+        value: -1,
+        label: '隐藏'
+      }, {
+        value: 0,
+        label: '正常显示'
+      }, {
+        value: 1,
+        label: '编辑推荐'
+      }],
+    }
   },
   methods: {
     search (val) {
@@ -77,10 +91,59 @@ const vm = Base({
         this.$message.error('error')
         this.stateVisible = false
       })
+    },
+    handleSizeChange(index, val) {
+      console.log(`每页 ${index} 条`)
+    },
+    handleCurrentChange(index, val) {
+      if (index > this.currentPage) {
+        const last  = this.listData.list[this.listData.list.length - 1]._id
+        this.params.last = last
+        this.params.first = null
+      } else if (index < this.currentPage){
+        const first  = this.listData.list[0]._id
+        this.params.first = first
+        this.params.last = null
+      }
+      this.currentPage = index
+
+      this.fetch()
+    },
+    handleDestroy(index, val, list) {
+      api.delete(`${options.url}/${val._id}`, {}).then((result) => {
+        this.$message.success('success')
+        list.splice(index, 1)
+      }).catch((err) => {
+        console.log(err)
+        this.$message.error(err.toString())
+      })
+    },
+    fetch() {
+      api.get(options.url, {params: this.params}).then((result) => {
+        this.listData = result.data.data
+      }).catch((err) => {
+        console.log(err)
+         this.$message.error(err.toString())
+      })
     }
+  },
+  watch: {
+    'listData.list': function (val) {
+      val = val.forEach(el => {
+        if (!el.edited_title) {
+          el.edited_title = el.trans_title
+        }
+        if (!el.edited_content) {
+          el.edited_content = el.trans_content
+        }
+        el.published = tools.moment(el.published)
+      })
+    }
+  },
+  mounted () {
+    this.fetch()
   }
-});
-export default vm
+}
 </script>
 
 <style lang="stylus">

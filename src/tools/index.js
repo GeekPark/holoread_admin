@@ -9,6 +9,9 @@ function printLog(title, info) {
 }
 
 export default {
+  moment: (obj, format = 'YYYY-MM-DD HH:mm:ss') => {
+    return moment(obj).format(format)
+  },
   qiniu: (_this, btnId, dropElement, key, callback) => {
     let uploader = Qiniu.uploader({
       runtimes: 'html5,flash,html4',
