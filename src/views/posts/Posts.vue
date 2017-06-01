@@ -13,7 +13,7 @@
         el-button(size='small',
                   @click='handleEdit(scope.$index, scope.row)') 编辑
         el-button(size='small',
-                  @click='handlePreview(scope.$index, scope.row)') 预览
+                  @click='dialogVisible = true, currentRow = scope.row') 预览
         el-button(size='small',
                   type='danger',
                   @click='handleDelete(scope.$index, scope.row)') 删除
@@ -23,6 +23,11 @@
                 :page-size='listData.meta.limit_value',
                 layout='total, prev, pager, next',
                 :total='listData.meta.total_count')
+  el-dialog(:title='currentRow.edited_title', v-model='dialogVisible', size='tiny')
+    p(v-html='currentRow.edited_content')
+    span.dialog-footer(slot='footer')
+      el-button(@click='dialogVisible = false') 取 消
+      el-button(type='primary', @click='dialogVisible = false') 确 定
 </template>
 
 <script>
@@ -30,6 +35,10 @@
 import Base from '../base'
 const vm = Base({
   url: 'admin/articles',
+  data: {
+    dialogVisible: false,
+    currentRow: {}
+  },
   methods: {
     search (val) {
       this.listData = val
@@ -42,5 +51,7 @@ const vm = Base({
 export default vm
 </script>
 
-<style lang="stylus" scoped>
+<style lang="stylus">
+.el-dialog div img
+  width 100%
 </style>
