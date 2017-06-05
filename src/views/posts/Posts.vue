@@ -6,8 +6,10 @@
   el-table(:data='listData.list', border)
     el-table-column(type="index", width="100")
     el-table-column(prop='edited_title', label='标题')
-    el-table-column(prop='order', label=' 状态', width="100")
-    el-table-column(prop='published', label='创建时间', width="200")
+    el-table-column(prop='order', label='状态', width="100")
+    el-table-column(prop='accesses', label='访问量', width="100")
+    el-table-column(prop='likes', label='收藏', width="100")
+    el-table-column(prop='publishe_at', label='创建时间', width="200")
     el-table-column(label='操作', width='250')
       template(scope='scope')
         el-button(size='small',
@@ -18,7 +20,7 @@
                   @click='previewVisible = true, currentRow = scope.row') 预览
         el-button(size='small',
                   type='danger',
-                  @click='handleDelete(scope.$index, scope.row)') 删除
+                  @click='handleDestroy(scope.$index, scope.row)') 删除
   el-pagination(@size-change='handleSizeChange',
                 @current-change='handleCurrentChange',
                 :current-page='currentPage',
@@ -97,11 +99,11 @@ export default {
     },
     handleCurrentChange(index, val) {
       if (index > this.currentPage) {
-        const last  = this.listData.list[this.listData.list.length - 1]._id
+        const last  = this.listData.list[this.listData.list.length - 1].published
         this.params.last = last
         this.params.first = null
       } else if (index < this.currentPage){
-        const first  = this.listData.list[0]._id
+        const first  = this.listData.list[0].published
         this.params.first = first
         this.params.last = null
       }
@@ -112,7 +114,7 @@ export default {
     handleDestroy(index, val, list) {
       api.delete(`${options.url}/${val._id}`, {}).then((result) => {
         this.$message.success('success')
-        list.splice(index, 1)
+        this.listData.list.splice(index, 1)
       }).catch((err) => {
         console.log(err)
         this.$message.error(err.toString())
@@ -136,7 +138,9 @@ export default {
         if (!el.edited_content) {
           el.edited_content = el.trans_content
         }
-        el.published = tools.moment(el.published)
+        el.publishe_at = tools.moment(el.published)
+        el.accesses = el.accesses ? el.accesses.length : '无数据'
+        el.likes = el.likes ? el.likes.length : '无数据'
       })
     }
   },
