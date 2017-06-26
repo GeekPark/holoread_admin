@@ -62,12 +62,12 @@ export default {
 }
 
 function getContent(_this) {
-    _this.form.edited_content = _this.$store.state.htmlEditor.$txt.html()
+    _this.form.edited_content = _this.$store.state.htmlEditor.txt.html()
 }
 
 function addContent(_this, val) {
   setTimeout(() => {
-    _this.$store.state.htmlEditor.$txt.html(_this.form.edited_content)
+    _this.$store.state.htmlEditor.txt.html(_this.form.edited_content)
   },100)
 }
 

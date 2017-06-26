@@ -28,7 +28,7 @@
                 layout='total, prev, pager, next',
                 :total='listData.meta.total_count')
   el-dialog(:title='currentRow.edited_title', v-model='previewVisible', size='tiny')
-    p(v-html='currentRow.edited_content')
+    p(v-html='previewHtml()')
     span.dialog-footer(slot='footer')
       el-button(@click='previewVisible = false') 取 消
       el-button(type='primary', @click='previewVisible = false') 确 定
@@ -79,6 +79,9 @@ export default {
   methods: {
     search (val) {
       this.listData = val
+    },
+    previewHtml () {
+      return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content;
     },
     handleEdit (index, el) {
       this.$router.push(`/posts/edit?id=${el._id}`)
