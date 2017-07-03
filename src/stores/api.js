@@ -23,7 +23,7 @@ axios.interceptors.request.use(function (config) {
   // config.params = Object.assign({}, config.params)
   // store.commit('LOADING', true)
   config.params = Object.assign({}, config.params)
-  if (config.params.page > 0) {config.params.page = config.params.page - 1}
+  if (config.params.start > 0) {config.params.start = config.params.start - 1}
   return config
 }, function (error) {
   // store.commit('LOADING', false)

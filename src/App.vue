@@ -68,9 +68,6 @@ html, body
 #vsider .el-row::-webkit-scrollbar
   display none
 
-#vsider, #vheader
-  display block !important
-
 
 #vheader
   height $headerWidth
