@@ -1,5 +1,5 @@
 <template lang="jade">
-#app(v-loading="isLoading", element-loading-text="拼命加载中")
+#app()
   vsider
   vheader
   transition(name="slide-fade")
@@ -11,12 +11,9 @@
 
 export default {
   name: 'app',
-  computed: {
-    isLoading () {
-      return this.$store.state.isLoading;
-    }
-  },
   mounted () {
+    const isLogin = localStorage.getItem('login')
+    if (isLogin !== 'true') {this.$router.push('/login')}
   }
 }
 
