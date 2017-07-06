@@ -4,16 +4,15 @@
     h1 {{$route.meta.title}}
     vsearch(type='Article', kw='edited_title', :cb='search')
   el-table(:data='listData.list', border)
-    el-table-column(type="index", width="100")
     el-table-column(prop='edited_title', label='标题')
-    el-table-column(prop='order', label='状态', width="100")
-    el-table-column(prop='accesses', label='访问量', width="100")
-    el-table-column(prop='likes', label='收藏', width="100")
-    el-table-column(prop='publishe_at', label='创建时间', width="200")
-    el-table-column(label='操作', width='250')
+    el-table-column(prop='order', label='状态', width="50")
+    el-table-column(prop='accesses', label='访问', width="50")
+    el-table-column(prop='likes', label='收藏', width="50")
+    el-table-column(prop='publishe_at', label='创建时间', width="170")
+    el-table-column(label='操作', width='240')
       template(scope='scope')
         el-button(size='small',
-                  @click='handleEdit(scope.$index, scope.row)') 编辑
+                  @click='currentRow = scope.row, handleEdit(scope.$index, scope.row)') 编辑
         el-button(size='small',
                   @click='stateVisible = true, currentRow = scope.row') 状态
         el-button(size='small',
@@ -84,7 +83,15 @@ export default {
       return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content;
     },
     handleEdit (index, el) {
-      this.$router.push(`/posts/edit?id=${el._id}`)
+      api.post(`admin/articles/${this.currentRow._id}/editing`)
+      .then(result => {
+        this.$router.push(`/posts/edit?id=${el._id}`)
+      }).catch(error => {
+        if (error.response) {
+          this.$message.error(`${error.response.data.data.editing} is editing`);
+        }
+      })
+
     },
     editState() {
       api.put(`admin/articles/${this.currentRow._id}`, {

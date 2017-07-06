@@ -52,9 +52,11 @@ export default {
           this.text = `${parseInt(this.text) - 1}`
         }
       }, 1000)
-      api.post('admin/account/sms', this.form).then((result) => {
+      api.post('admin/account/sms', this.form).then(result => {
         this.$message.success('success')
-      }).catch((err) => {
+      })
+      .catch(err => {
+        console.log(err.data)
         this.$message.error('请求失败')
       })
 
