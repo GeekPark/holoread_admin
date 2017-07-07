@@ -6,7 +6,7 @@
                        :default-active='activeIndex',
                        mode='horizontal',
                        @select='handleSelect')
-    el-menu-item(index='email') {{email}}
+    el-menu-item(index='phone') {{phone}}
     el-menu-item(index='logout') {{state}}
 
 </template>
@@ -17,15 +17,15 @@ export default {
   name: 'vheader',
   computed: {
     state () {
-      return this.email === '' ||
-             this.email === null ||
-             this.email === 'null' ? '登录'  :  '退出'
+      return this.phone === '' ||
+             this.phone === null ||
+             this.phone === 'null' ? '登录'  :  '退出'
     }
   },
+  props: ['phone'],
   data () {
     return {
       activeIndex: "1",
-      email: '',
       routes: [
       ]
     }
@@ -35,7 +35,8 @@ export default {
       if (key === 'logout') {
         api.post('/admin/account/logout').then((result) => {
           if (result.status === 200) {
-            localStorage.setItem('email', null);
+            localStorage.setItem('user', null);
+            localStorage.setItem('login', null);
             this.$router.push('/login');
           }
         })
@@ -43,9 +44,6 @@ export default {
         this.$router.push(`/${key}`)
       }
     }
-  },
-  mounted () {
-    this.email = localStorage.getItem('email') || '未登录';
   }
 }
 </script>

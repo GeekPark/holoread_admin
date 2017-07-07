@@ -1,7 +1,7 @@
 <template lang="jade">
 #app()
   vsider
-  vheader
+  vheader(:phone='phone')
   transition(name="slide-fade")
     router-view
   vfooter
@@ -11,8 +11,17 @@
 
 export default {
   name: 'app',
+  data () {
+    return {
+      phone: ''
+    }
+  },
   mounted () {
     const isLogin = localStorage.getItem('login')
+    this.phone    = localStorage.getItem('user')
+
+    if(this.$route.params.debug !== true){console.log = ()=>{}}
+
     if (isLogin !== 'true' && !isAllow(this)) {this.$router.push('/login')}
   }
 }

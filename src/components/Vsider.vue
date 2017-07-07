@@ -8,7 +8,7 @@
             i.el-icon-menu
             | 用户
           el-menu-item(index='/users') 用户列表
-          el-menu-item(index='/users/new') 添加用户
+          //- el-menu-item(index='/users/new') 添加用户
         el-submenu(index='/2')
           template(slot='title')
             i.el-icon-edit

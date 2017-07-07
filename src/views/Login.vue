@@ -26,7 +26,7 @@
 
 <script>
 import api from '../stores/api'
-const time = 5
+const time = 30
 export default {
   data () {
     return {
@@ -69,6 +69,8 @@ export default {
       api.post('admin/account/login', this.form).then((result) => {
         this.$message.success('success')
         localStorage.setItem('login', true);
+        localStorage.setItem('user', result.data.data.phone);
+        location.reload()
         this.$router.push('/')
       }).catch((err) => {
         this.$message.error('请求失败')
