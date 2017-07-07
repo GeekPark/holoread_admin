@@ -13,8 +13,12 @@ export default {
   name: 'app',
   mounted () {
     const isLogin = localStorage.getItem('login')
-    if (isLogin !== 'true') {this.$router.push('/login')}
+    if (isLogin !== 'true' && !isAllow(this)) {this.$router.push('/login')}
   }
+}
+
+function isAllow (_this) {
+  return _this.$route.matched[0].path === '/html/:id'
 }
 
 </script>
