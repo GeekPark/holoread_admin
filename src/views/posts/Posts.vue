@@ -2,7 +2,11 @@
 #admin-articles.admin
   .title
     h1 {{$route.meta.title}}
-    vsearch(type='Article', kw='edited_title', :cb='search')
+    el-input(placeholder='请输入搜索内容',
+           icon='search',
+           v-model='params.title',
+           :on-icon-click='handleSearch',
+           @keyup.enter='handleSearch')
   el-table(:data='listData.list', border)
     el-table-column(prop='edited_title', label='标题')
     el-table-column(prop='order', label='状态', width="50")
@@ -51,6 +55,7 @@ export default {
       params: {
         last: null,
         first: null,
+        title: null,
         limit: 20,
       },
       listData: {
@@ -78,6 +83,9 @@ export default {
   methods: {
     search (val) {
       this.listData = val
+    },
+    handleSearch () {
+      this.fetch()
     },
     previewHtml () {
       return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content;
@@ -161,7 +169,11 @@ export default {
 </script>
 
 <style lang="stylus">
-.el-dialog div
-  img, iframe
-    width 100%
+#admin-articles
+  .el-input
+    width 200px
+    float right
+  .el-dialog div
+    img, iframe
+      width 100%
 </style>
