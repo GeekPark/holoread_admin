@@ -1,11 +1,22 @@
 <template lang="jade">
-#preview
+#preview(v-bind:class="{ darkTheme: $route.query.theme === 'dark' }")
   h1.title {{article.edited_title}}
+    img.status-icon(src='../assets/imgs/hot.png')
+    img.status-icon(src='../assets/imgs/recommend.png')
   p.info
     span {{article.ago}}前 | {{article.source}}
-    span.r(@click="isOrigin = !isOrigin") 原文
-    span.r 分享
-    span.r 收藏
+    span.r(@click="isOrigin = !isOrigin")
+      img.icon(src='../assets/imgs/origin.png')
+      | 原文
+    span.line
+    span.r(@click='handleShare')
+      img.icon(src='../assets/imgs/share.png')
+      | 分享
+    span.line
+    span.r(@click='handleLike')
+      img.icon(src='../assets/imgs/like.png')
+      | 收藏
+
   p.content(v-html='content')
 
 </template>
@@ -16,7 +27,8 @@ export default {
   data () {
     return {
       article: {},
-      isOrigin: false
+      isOrigin: this.$route.query.isOrigin ? true : false,
+      isLike: this.$route.query.isLike ? true : false,
     }
   },
   computed: {
@@ -24,14 +36,22 @@ export default {
       return this.isOrigin ? this.article.origin_content : this.article.edited_content
     }
   },
+  methods: {
+    handleShare () {
+      try {
+        JSObject.share(this.article._id)
+      } catch (e) {}
+    },
+    handleLike () {
+      try {
+        JSObject.like(this.article._id)
+      } catch (e) {}
+    }
+  },
   mounted() {
-    api.get(`v1/articles/${this.$route.params.id}`)
-    .then(result => {
-      this.article = result.data.data
-      console.log(result)
-    }, error => {
-
-    })
+    api.get(`v1/articles/${this.$route.params.id}`, {params: {user: this.$route.query.user}})
+    .then(result => { this.article = result.data.data }, error => {})
+    // hidden header sider
     document.getElementById('vheader').style.display = 'none'
     document.getElementById('vsider').style.display = 'none'
   },
@@ -71,15 +91,18 @@ function timeSince(date) {
 }
 </script>
 
-<style lang="stylus" >
+<style lang="stylus">
 #preview
   padding 12px
   width calc(100% - 24px)
   color rgba(51,51,51,1)
+  -webkit-overflow-scrolling touch
+
   .title
     font-family 'PingFangSC-Medium'
     font-size 21px
     line-height 31px
+    float none
   .info
     color rgba(153,153,153,1)
     font-family 'PingFangSC-Light'
@@ -95,12 +118,42 @@ function timeSince(date) {
 
   a
     color rgba(255,137,50,1)
+    margin 0 2px
   .r
     float right
+    font-size 13px
+    font-family 'PingFangSC-Regular'
+  .icon
+    width 15px
+    height 13px
+    margin-right 4px
+    top 1px
+    position relative
+  .line
+    width 1px
+    height 10px
+    margin 4px 10px
+    float right
+    background-color rgba(153,153,153,1)
+  .status-icon
+    width 15px
+    height 16px
+    margin-right 5px
 
 
 
 #preview::-webkit-scrollbar
   display:none
+
+.darkTheme
+  background-color #1e1e29
+  .title, .content
+    color #999999
+  .info *
+    color #666666
+  .line
+    background-color #666666
+
+
 
 </style>
