@@ -14,7 +14,7 @@
       | 分享
     span.line
     span.r(@click='handleLike')
-      img.icon(src='../assets/imgs/like.png')
+      img.icon(:src='likeIcon')
       | 收藏
 
   p.content(v-html='content')
@@ -34,6 +34,9 @@ export default {
   computed: {
     content () {
       return this.isOrigin ? this.article.origin_content : this.article.edited_content
+    },
+    likeIcon () {
+      return this.isLike ? require('../assets/imgs/liked.png') : require('../assets/imgs/like.png')
     }
   },
   methods: {
@@ -43,8 +46,14 @@ export default {
       } catch (e) {}
     },
     handleLike () {
+      this.isLike = !this.isLike
       try {
         JSObject.like(this.article._id)
+      } catch (e) {}
+    },
+    handleLink () {
+      try {
+        JSObject.link(this.article.url)
       } catch (e) {}
     }
   },
@@ -96,7 +105,9 @@ function timeSince(date) {
   padding 12px
   width calc(100% - 24px)
   color rgba(51,51,51,1)
+  overflow scroll
   -webkit-overflow-scrolling touch
+
 
   .title
     font-family 'PingFangSC-Medium'
