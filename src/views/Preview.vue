@@ -105,7 +105,9 @@ function timeSince(date) {
   padding 12px
   width calc(100% - 24px)
   color rgba(51,51,51,1)
-  overflow scroll
+  overflow-y scroll
+  overflow-x hidden
+  height 100%
   -webkit-overflow-scrolling touch
 
 
@@ -151,7 +153,10 @@ function timeSince(date) {
     height 16px
     margin-right 5px
 
-
+  h3
+    word-wrap: break-word;
+    word-break: normal;
+    font-size: 30px;
 
 #preview::-webkit-scrollbar
   display:none
