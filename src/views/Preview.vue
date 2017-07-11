@@ -1,5 +1,5 @@
 <template lang="jade">
-#preview(v-bind:class="{ darkTheme: $route.query.theme === 'dark' }")
+#preview(v-bind:class="{ darkTheme: $route.query.theme === 'dark' , fontSize1: $route.query.fontSize === '1' , fontSize2: $route.query.fontSize === '2' , fontSize3: $route.query.fontSize === '3' }")
   h1.title {{article.edited_title}}
     img.status-icon(src='../assets/imgs/hot.png')
     img.status-icon(src='../assets/imgs/recommend.png')
@@ -60,7 +60,7 @@ export default {
   mounted() {
     api.get(`v1/articles/${this.$route.params.id}`, {params: {user: this.$route.query.user}})
     .then(result => { this.article = result.data.data }, error => {})
-    // hidden header sider
+
     document.getElementById('vheader').style.display = 'none'
     document.getElementById('vsider').style.display = 'none'
   },
@@ -170,6 +170,23 @@ function timeSince(date) {
   .line
     background-color #666666
 
+.fontSize1
+  .title
+    font-size 20px !important
+  .content *, .info *
+    font-size 12px !important
+
+.fontSize2
+  .title
+    font-size 21px !important
+  .content *, .info *
+    font-size 13px !important
+
+.fontSize3
+  .title
+    font-size 22px !important
+  .content *, .info *
+    font-size 14px !important
 
 
 </style>
