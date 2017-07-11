@@ -59,7 +59,10 @@ export default {
   },
   mounted() {
     api.get(`v1/articles/${this.$route.params.id}`, {params: {user: this.$route.query.user}})
-    .then(result => { this.article = result.data.data }, error => {})
+    .then(result => {
+      this.article = result.data.data
+      try { JSObject.cancelLoading() } catch (e) {}
+    }, error => {})
 
     document.getElementById('vheader').style.display = 'none'
     document.getElementById('vsider').style.display = 'none'
