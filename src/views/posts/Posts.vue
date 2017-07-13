@@ -5,8 +5,8 @@
     el-input(placeholder='请输入搜索内容',
            icon='search',
            v-model='params.title',
-           :on-icon-click='handleSearch',
-           @keyup.enter='handleSearch')
+           :on-icon-click='fetch',
+           @keyup.enter='fetch')
   el-table(:data='listData.list', border)
     el-table-column(prop='edited_title', label='标题')
     el-table-column(prop='order', label='状态', width="50")
@@ -24,12 +24,12 @@
         el-button(size='small',
                   type='danger',
                   @click='handleDestroy(scope.$index, scope.row)') 删除
-  el-pagination(@size-change='handleSizeChange',
-                @current-change='handleCurrentChange',
-                :current-page='currentPage',
-                :page-size='listData.meta.limit_value',
-                layout='total, prev, pager, next',
-                :total='listData.meta.total_count')
+  .pagination
+    el-select.limits(v-model='params.limit', placeholder='请选择')
+      el-option(v-for='item in limits', :label='item', :value='item')
+    el-button(@click='pre') 上一页
+    el-button(@click='next') 下一页
+    h2 共 {{listData.meta.total_count}} 条
   el-dialog(:title='currentRow.edited_title', v-model='previewVisible', size='tiny')
     p(v-html='previewHtml()')
     span.dialog-footer(slot='footer')
@@ -69,6 +69,7 @@ export default {
       stateVisible: false,
       currentRow: {},
       currentPage: 1,
+      limits: [20, 50, 100],
       options: [{
         value: -1,
         label: '隐藏'
@@ -84,9 +85,6 @@ export default {
   methods: {
     search (val) {
       this.listData = val
-    },
-    handleSearch () {
-      this.fetch()
     },
     previewHtml () {
       return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content;
@@ -113,21 +111,16 @@ export default {
         this.stateVisible = false
       })
     },
-    handleSizeChange(index, val) {
-      console.log(`每页 ${index} 条`)
+    pre() {
+      const first  = this.listData.list[0].published
+      this.params.first = first
+      this.params.last = null
+      this.fetch()
     },
-    handleCurrentChange(index, val) {
-      if (index > this.currentPage) {
-        const last  = this.listData.list[this.listData.list.length - 1].published
-        this.params.last = last
-        this.params.first = null
-      } else if (index < this.currentPage){
-        const first  = this.listData.list[0].published
-        this.params.first = first
-        this.params.last = null
-      }
-      this.currentPage = index
-
+    next() {
+      const last  = this.listData.list[this.listData.list.length - 1].published
+      this.params.last = last
+      this.params.first = null
       this.fetch()
     },
     handleDestroy(index, val, list) {
@@ -142,8 +135,12 @@ export default {
     fetch() {
       this.loading = true
       api.get(options.url, {params: this.params}).then((result) => {
-        this.listData = result.data.data
         this.loading = false
+        if (result.data.data.list.length <= 0) {
+          this.$message.error('没有数据啦!!')
+          return;
+        }
+        this.listData = result.data.data
       }).catch((err) => {
         this.loading = false
         this.$message.error(err.toString())
@@ -181,4 +178,8 @@ export default {
       width 100%
   .el-table
     font-size 13px
+  .limits
+    top 12px
+    margin-right 10px
+
 </style>
