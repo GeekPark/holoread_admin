@@ -15,7 +15,6 @@ import Logs        from './views/logs/Logs.vue'
 import Users       from './views/users/Users.vue'
 import AddUser     from './views/users/AddUser.vue'
 
-import Preview     from './views/Preview.vue'
 
 Vue.use(VueRouter)
 
@@ -61,12 +60,7 @@ const router = new VueRouter({
       component: EditPost,
       meta: {title: '编辑文章'}
     },
-    {
-      path: '/html/:id',
-      name: 'preview',
-      component: Preview,
-      meta: {title: ''}
-    },
+
     { path: '*',
       component: Errors,
       meta: {title: 'Error'}

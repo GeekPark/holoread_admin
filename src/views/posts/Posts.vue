@@ -1,5 +1,5 @@
 <template lang="jade">
-#admin-articles.admin
+#admin-articles.admin(v-loading.body="loading")
   .title
     h1 {{$route.meta.title}}
     el-input(placeholder='请输入搜索内容',
@@ -64,6 +64,7 @@ export default {
           limit_value: 0
         }
       },
+      loading: false,
       previewVisible: false,
       stateVisible: false,
       currentRow: {},
@@ -139,11 +140,13 @@ export default {
       })
     },
     fetch() {
+      this.loading = true
       api.get(options.url, {params: this.params}).then((result) => {
         this.listData = result.data.data
+        this.loading = false
       }).catch((err) => {
-        console.log(err)
-         this.$message.error(err.toString())
+        this.loading = false
+        this.$message.error(err.toString())
       })
     }
   },
@@ -176,4 +179,6 @@ export default {
   .el-dialog div
     img, iframe
       width 100%
+  .el-table
+    font-size 13px
 </style>

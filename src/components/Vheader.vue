@@ -1,7 +1,7 @@
 <template lang="jade">
 #vheader
   router-link(to="/")
-      img(src="../assets/imgs/copyright.png")
+      h1 &nbsp &nbsp GEEKPARK
   el-menu.el-menu-demo(theme='light',
                        :default-active='activeIndex',
                        mode='horizontal',
@@ -50,10 +50,14 @@ export default {
 
 <style lang="stylus" scoped>
 .el-menu
-  float right
-  margin-right 45px
+  position absolute
+  right 50px
+  top 0px
 img
   height 30px
   margin 15px 20px
+h1
+  color #000
+  padding-top 5px
 </style>
 
