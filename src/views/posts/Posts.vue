@@ -95,10 +95,9 @@ export default {
         this.$router.push(`/posts/edit?id=${el._id}`)
       }).catch(error => {
         if (error.response) {
-          this.$message.error(`${error.response.data.data.editing} is editing`);
+          this.$message.error(`${error.response.data.data.editing.nickname} 正在编辑!!! 已经锁定`);
         }
       })
-
     },
     editState() {
       api.put(`admin/articles/${this.currentRow._id}`, {
