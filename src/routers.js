@@ -41,7 +41,7 @@ const router = new VueRouter({
     { path: '/users/new',
       name: 'users-new',
       component: AddUser,
-      meta: {title: '添加用户'}
+      meta: {title: '修改用户'}
     },
 
     { path: '/logs',

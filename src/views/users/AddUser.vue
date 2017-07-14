@@ -3,30 +3,27 @@
   .title
     h1 {{$route.meta.title}}
   el-form(:model='form', label-width='100px')
+    img(:src='form.headimgurl')
     el-form-item(label='用户级别*')
       el-select(v-model='form.permission', placeholder='请选择权限', size="large" multiple)
         el-option(v-for='item in options',
                   :label='item.label',
                   :value='item.value',
                   :key="item.value")
-    el-form-item(label='昵称*', placeholder='必填')
+    el-form-item(label='nickname', placeholder='必填')
       el-input(v-model='form.nickname', auto-complete='off')
-    el-form-item(label='公司')
-      el-input(v-model='form.company')
-    el-form-item(label='职位')
-      el-input(v-model='form.title')
-    el-form-item(label='电话')
+    el-form-item(label='country')
+      el-input(v-model='form.country')
+    el-form-item(label='city')
+      el-input(v-model='form.city')
+    el-form-item(label='province')
+      el-input(v-model='form.province')
+    el-form-item(label='phone')
       el-input(v-model='form.phone')
-    el-form-item(label='微信')
-      el-input(v-model='form.wechat')
-    el-form-item(label='邮箱')
-      el-input(v-model='form.email', placeholder='登录后台需要')
-    el-form-item(label='密码')
-      el-input(v-model='form. password', placeholder='登录后台需要')
-    el-form-item(label='一句话简介')
-      el-input(v-model='form.sign')
-    el-form-item(label='简介')
-      el-input(v-model='form.intro', type='textarea')
+    el-form-item(label='gender')
+      el-input(v-model='form.gender')
+    el-form-item(label='state')
+      el-input(v-model='form.state')
     el-form-item(label='操作')
       el-button(@click='onCancel') 取 消
       el-button(type='primary', @click='onSubmit') 确 定
@@ -51,55 +48,38 @@ export default {
   },
   methods: {
     onSubmit () {
-      if (this.id) {
-        update(this)
-      } else {
-        create(this)
-      }
+      update(this)
     },
     onCancel () {
       this.form = initForm()
     }
   },
   mounted () {
-    if (this.id) { // edit
-      fetch(this, {}, `/admin/users/${this.id}`)
-    }
+    fetch(this, {}, `/admin/users/${this.id}`)
   }
 }
 
 function initForm () {
   return {
-    nickname:   '',
-    company:    '',
-    title:      '',
     permission: ['visitor'],
-    summary:    '',
-    sign:       '',
-    intro:      '',
-    openid:     '',
-    password:   '',
-    weight:     0,
-    wechat:     '',
-    email:      '',
-    phone:      '',
+    createdAt: "2017-07-10T03:19:01.842Z",
+    country: "中国",
+    city: "沈阳",
+    gender:1,
+    headimgurl: "http://wx.qlogo.cn/mmopen/iaRlzG8zy7Bse69r0Gf4MZdIVkVvg24tN1rSSpTcE6APxf4Kas8wcUmUSE9vRpcfWbYDdTOkiatjdhXVMvMWzzxw/0",
+    nickname: "二三🍭",
+    phone: "18609889095",
+    province: "辽宁",
+    state:-1,
   }
-}
-
-function create (_this) {
-  api.post('/admin/users', _this.form)
-  .then(result => {
-    _this.$message.success('success')
-    _this.form = initForm()
-  })
-  .catch(err => {
-    _this.$message.success('error')
-  })
 }
 
 function fetch (_this = {}, params = {}, url = '') {
   api.get(url, {params: params}).then((result) => {
-    _this.form = result.data.data
+    const user = result.data.data;
+    Object.keys(_this.form).forEach(key => {
+      _this.form[key] = user[key]
+    })
   }).catch((err) => {
      _this.$message.error(err.toString())
   })
@@ -108,8 +88,6 @@ function fetch (_this = {}, params = {}, url = '') {
 function update (_this = {}) {
   api.put(`/admin/users/${_this.id}`, _this.form).then((result) => {
     _this.$message.success('success')
-    _this.form = initForm()
-    _this.$router.push('/users/new')
   }).catch((err) => {
      _this.$message.error(err.toString())
   })
@@ -119,4 +97,9 @@ function update (_this = {}) {
 <style lang="stylus" scoped>
 .el-input, .el-textarea
   width 50%
+img
+  width 100px
+  position absolute
+  top 100px
+  right 100px
 </style>
