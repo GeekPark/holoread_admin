@@ -12,8 +12,8 @@ export default {
     return moment(obj).format(format)
   },
   editor: function (vm) {
-    const editor = new wangEditor('#editor');
+    const editor = new window.wangEditor('#editor');
     editor.create();
-    vm.$store.commit('SET_ITEM', { key: 'htmlEditor', val: editor })
+    vm.$store.commit('SET_EDITOR', editor)
   }
 }

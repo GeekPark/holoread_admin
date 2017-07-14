@@ -58,16 +58,24 @@ export default {
   },
   mounted () {
     this.id && getPost(this)
+  },
+  watch: {
+    'form': (val) => {
+      if (val.summary === '') {
+        const content = delHtmlTag(val.edited_content);
+        val.summary = content.length >= 100 ? content.substring(0, 100) : content;
+      }
+    }
   }
 }
 
 function getContent(_this) {
-    _this.form.edited_content = _this.$store.state.htmlEditor.txt.html()
+    _this.form.edited_content = _this.$store.state.Editor.txt.html()
 }
 
 function addContent(_this, val) {
   setTimeout(() => {
-    _this.$store.state.htmlEditor.txt.html(_this.form.edited_content)
+    _this.$store.state.Editor.txt.html(_this.form.edited_content)
   },100)
 }
 
@@ -101,9 +109,17 @@ function getPost(_this) {
      _this.$message.error(err.toString())
   })
 }
+
+function delHtmlTag(str) {
+  return str.replace(/<[^>]+>/g,"");//去掉所有的html标记
+}
 </script>
 
 <style lang="stylus">
+.w-e-text-container
+  height 400px !important
+
+
 #edit-post
   .el-input--mini
       width 200px !important

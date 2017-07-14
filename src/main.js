@@ -10,16 +10,12 @@ import Vsider     from "./components/Vsider.vue"
 import Vheader    from "./components/Vheader.vue"
 import Vfooter    from "./components/Vfooter.vue"
 import Veditor    from "./components/Veditor.vue"
-import Vsearch    from "./components/Vsearch.vue"
-import Vmarkdown  from "./components/Vmarkdown.vue"
 import Element    from 'element-ui'
 
 Vue.component(Vheader.name,   Vheader)
 Vue.component(Vfooter.name,   Vfooter)
 Vue.component(Vsider.name,    Vsider)
 Vue.component(Veditor.name,   Veditor)
-Vue.component(Vsearch.name,   Vsearch)
-Vue.component(Vmarkdown.name, Vmarkdown)
 
 Vue.use(Element)
 

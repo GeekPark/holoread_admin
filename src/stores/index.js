@@ -5,7 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    htmlEditor: {},
+    Editor: {},
     markdownEditor: {},
     isLoading: false,
     roles: [{
@@ -27,5 +27,10 @@ export default new Vuex.Store({
       label: '管理员',
       value: 'admin'
     }]
+  },
+  mutations: {
+    SET_EDITOR: (state, val) => {
+      state.Editor = val
+    }
   }
 })
