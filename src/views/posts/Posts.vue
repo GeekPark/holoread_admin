@@ -2,7 +2,7 @@
 #admin-articles.admin(v-loading.body="loading")
   .title
     h1 {{$route.meta.title}}
-    el-input(placeholder='请输入搜索内容',
+    el-input(placeholder='请输入标题搜索',
            icon='search',
            v-model='params.title',
            :on-icon-click='fetch',
@@ -21,9 +21,7 @@
                   @click='stateVisible = true, currentRow = scope.row') 状态
         el-button(size='small',
                   @click='previewVisible = true, currentRow = scope.row') 预览
-        el-button(size='small',
-                  type='danger',
-                  @click='handleDestroy(scope.$index, scope.row)') 删除
+        el-button(size='small',@click="openDestroyBox(scope.$index, scope.row)", type='danger') 删除
   .pagination
     el-select.limits(v-model='params.limit', placeholder='请选择')
       el-option(v-for='item in limits', :label='item', :value='item')
@@ -145,6 +143,20 @@ export default {
         this.loading = false
         this.$message.error(error.toString())
       })
+    },
+    openDestroyBox(index, val) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.handleDestroy(index, val)
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
     }
   },
   watch: {
@@ -181,5 +193,9 @@ export default {
   .limits
     top 12px
     margin-right 10px
+
+  img
+    width 100%
+
 
 </style>

@@ -33,7 +33,7 @@ function isAllow (_this) {
 </script>
 
 <style lang="stylus">
-$siderrWidth = 200px
+$siderrWidth = 130px
 $headerWidth = 60px
 
 html, body

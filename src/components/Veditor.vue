@@ -1,6 +1,6 @@
 <template lang="jade">
 #veditor
-  #editor(style="height:500px;max-height:1000px;")
+  #editor(style="height:400px;max-height:1000px;")
 </template>
 
 <script>
@@ -17,6 +17,5 @@ export default {
 <style lang="stylus" scoped>
 #veditor
   font initial
-  margin-top 10px
   margin-bottom 30px
 </style>
