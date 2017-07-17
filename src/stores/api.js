@@ -31,6 +31,9 @@ request.interceptors.request.use(function (config) {
 request.interceptors.response.use(function (response) {
   return response
 }, function (error) {
+  if (error.response.data.msg === 'session error') {
+    router.push('/login')
+  }
   return Promise.reject(error)
 })
 

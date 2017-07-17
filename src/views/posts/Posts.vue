@@ -125,7 +125,8 @@ export default {
     handleDestroy(index, val, list) {
       api.delete(`${options.url}/${val._id}`, {}).then((result) => {
         this.$message.success('success')
-        this.listData.list.splice(index, 1)
+        console.log(index)
+        this.fetch()
       }).catch((err) => {
         console.log(err)
         this.$message.error(err.toString())
@@ -140,9 +141,9 @@ export default {
           return;
         }
         this.listData = result.data.data
-      }).catch((err) => {
+      }).catch(error => {
         this.loading = false
-        this.$message.error(err.toString())
+        this.$message.error(error.toString())
       })
     }
   },

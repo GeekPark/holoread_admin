@@ -4,7 +4,7 @@
     .group
       h1 GeekPark
     .group
-      input(type='phone', v-model='form.phone')
+      input(type='phone', v-model='form.phone' v-focus='true')
       span.highlight
       span.bar
       label Phone
@@ -13,7 +13,7 @@
         .ripples.buttonRipples
           span.ripplesCircle
     .group
-      input(type='code', v-model='form.code')
+      input(type='code', v-model='form.code', @keyup.enter='submit')
       span.highlight
       span.bar
       label Code
@@ -37,6 +37,13 @@ export default {
       disabled: false,
       submitDisabled: false,
       text: 'send',
+    }
+  },
+  directives: {
+    focus: {
+      inserted: function (el, binding) {
+        el.focus()
+      }
     }
   },
   methods: {
