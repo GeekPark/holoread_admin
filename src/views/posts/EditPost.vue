@@ -111,7 +111,7 @@ function updatePost(_this) {
   api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
   .then((result) => {
      _this.$message.success('success')
-     _this.$router.push('/posts')
+     window.history.go(-1)
   }).catch((err) => {
      _this.$message.error(err.toString())
   })

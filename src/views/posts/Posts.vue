@@ -2,22 +2,27 @@
 #admin-articles.admin(v-loading.body="loading")
   .title
     h1 {{$route.meta.title}}
+    el-radio-group(v-model='params.language')
+      el-radio(label='') 全部
+      el-radio(label='en') 英文
+      el-radio(label='cn') 中文
     el-input(placeholder='请输入标题搜索',
            icon='search',
            v-model='params.title',
            :on-icon-click='fetch',
            @keyup.enter='fetch')
 
-  el-table(:data='listData.list', :row-class-name="tableRowClassName", border)
+
+  el-table(:data='listData.list', :row-class-name="tableRowClassName", @cell-click="handleEdit", border)
     el-table-column(prop='edited_title', label='标题')
     el-table-column(prop='order', label='状态', width="50")
     el-table-column(prop='accesses', label='访问', width="50")
     el-table-column(prop='likes', label='收藏', width="50")
     el-table-column(prop='publishe_at', label='创建时间', width="170")
-    el-table-column(label='操作', width='250')
+    el-table-column(label='操作', width='190')
       template(scope='scope')
-        el-button(size='small',
-                  @click='currentRow = scope.row, handleEdit(scope.$index, scope.row)') 编辑
+        //- el-button(size='small',
+        //-           @click='currentRow = scope.row, handleEdit(scope.row)') 编辑
         el-button(size='small',
                   @click='stateVisible = true, currentRow = scope.row') 状态
         el-button(size='small',
@@ -46,11 +51,12 @@
 </template>
 
 <script>
+
 import api from 'stores/api'
 import tools from '../../tools'
-const options = {
-  url: 'admin/articles'
-}
+
+const url = 'admin/articles'
+
 export default {
   data() {
     return {
@@ -59,6 +65,7 @@ export default {
         first: null,
         title: null,
         limit: 20,
+        language: '',
       },
       listData: {
         meta: {
@@ -91,10 +98,10 @@ export default {
     previewHtml () {
       return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content;
     },
-    handleEdit (index, el) {
-      api.post(`admin/articles/${this.currentRow._id}/editing`)
+    handleEdit (el) {
+      api.post(`admin/articles/${el._id}/editing`)
       .then(result => {
-        this.$router.push(`/posts/edit?id=${el._id}`)
+        window.open(`/posts/edit?id=${el._id}`)
       }).catch(error => {
         if (error.response) {
           this.$message.error(`${error.response.data.data.editing.nickname} 正在编辑!!! 已经锁定`);
@@ -125,7 +132,7 @@ export default {
       this.fetch()
     },
     handleDestroy(index, val, list) {
-      api.delete(`${options.url}/${val._id}`, {}).then((result) => {
+      api.delete(`${url}/${val._id}`, {}).then((result) => {
         this.$message.success('success')
         console.log(index)
         this.fetch()
@@ -136,7 +143,7 @@ export default {
     },
     fetch() {
       this.loading = true
-      api.get(options.url, {params: this.params}).then((result) => {
+      api.get(url, {params: this.params}).then((result) => {
         this.loading = false
         if (result.data.data.list.length <= 0) {
           this.$message.error('没有数据啦!!')
@@ -182,6 +189,9 @@ export default {
         el.accesses = el.accesses ? el.accesses.length : '无数据'
         el.likes = el.likes ? el.likes.length : '无数据'
       })
+    },
+    'params.language': function () {
+      setTimeout(() => {this.fetch()}, 100)
     }
   },
   mounted () {
