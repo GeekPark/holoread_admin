@@ -7,13 +7,14 @@
            v-model='params.title',
            :on-icon-click='fetch',
            @keyup.enter='fetch')
-  el-table(:data='listData.list', border)
+
+  el-table(:data='listData.list', :row-class-name="tableRowClassName", border)
     el-table-column(prop='edited_title', label='标题')
     el-table-column(prop='order', label='状态', width="50")
     el-table-column(prop='accesses', label='访问', width="50")
     el-table-column(prop='likes', label='收藏', width="50")
     el-table-column(prop='publishe_at', label='创建时间', width="170")
-    el-table-column(label='操作', width='240')
+    el-table-column(label='操作', width='250')
       template(scope='scope')
         el-button(size='small',
                   @click='currentRow = scope.row, handleEdit(scope.$index, scope.row)') 编辑
@@ -22,17 +23,20 @@
         el-button(size='small',
                   @click='previewVisible = true, currentRow = scope.row') 预览
         el-button(size='small',@click="openDestroyBox(scope.$index, scope.row)", type='danger') 删除
+
   .pagination
     el-select.limits(v-model='params.limit', placeholder='请选择')
       el-option(v-for='item in limits', :label='item', :value='item')
     el-button(@click='pre') 上一页
     el-button(@click='next') 下一页
     h2 共 {{listData.meta.total_count}} 条
+
   el-dialog(:title='currentRow.edited_title', v-model='previewVisible', size='tiny')
     p(v-html='previewHtml()')
     span.dialog-footer(slot='footer')
       el-button(@click='previewVisible = false') 取 消
       el-button(type='primary', @click='previewVisible = false') 确 定
+
   el-dialog(:title='currentRow.edited_title', v-model='stateVisible', size='tiny')
     el-select(v-model='currentRow.order', placeholder='请选择')
       el-option(v-for='item in options', :label='item.label', :value='item.value')
@@ -157,6 +161,12 @@ export default {
             message: '已取消删除'
           });
         });
+    },
+    tableRowClassName(row, index) {
+      if (row.is_cn) {
+        return 'cn-row';
+      }
+      return '';
     }
   },
   watch: {
@@ -196,6 +206,14 @@ export default {
 
   img
     width 100%
+
+  .el-table .cn-row {
+    background: #c9e5f5;
+  }
+
+  .el-table .positive-row {
+    background: #e2f0e4;
+  }
 
 
 </style>
