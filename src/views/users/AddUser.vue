@@ -1,5 +1,5 @@
 <template lang="jade">
-#add-user.admin
+#add-user.admin(v-loading.body="loading")
   .title
     h1 {{$route.meta.title}}
   el-form(:model='form', label-width='100px')
@@ -43,7 +43,8 @@ export default {
   },
   data () {
     return {
-      form: initForm()
+      form: initForm(),
+      loading: false
     }
   },
   methods: {
@@ -51,43 +52,49 @@ export default {
       update(this)
     },
     onCancel () {
-      this.form = initForm()
+      this.$router.push('/users')
     }
   },
   mounted () {
-    fetch(this, {}, `/admin/users/${this.id}`)
+    fetch(this)
   }
 }
 
 function initForm () {
   return {
     permission: ['visitor'],
-    createdAt: "2017-07-10T03:19:01.842Z",
-    country: "中国",
-    city: "沈阳",
+    createdAt: "",
+    country: "",
+    city: "",
     gender:1,
-    headimgurl: "http://wx.qlogo.cn/mmopen/iaRlzG8zy7Bse69r0Gf4MZdIVkVvg24tN1rSSpTcE6APxf4Kas8wcUmUSE9vRpcfWbYDdTOkiatjdhXVMvMWzzxw/0",
-    nickname: "二三🍭",
-    phone: "18609889095",
-    province: "辽宁",
+    headimgurl: "",
+    nickname: "",
+    phone: "",
+    province: "",
     state:-1,
   }
 }
 
-function fetch (_this = {}, params = {}, url = '') {
-  api.get(url, {params: params}).then((result) => {
+function fetch (_this = {}) {
+  _this.loading = true
+  api.get(`/admin/users/${_this.id}`).then((result) => {
     const user = result.data.data;
     Object.keys(_this.form).forEach(key => {
       _this.form[key] = user[key]
     })
+    _this.loading = false
   }).catch((err) => {
      _this.$message.error(err.toString())
+     _this.loading = false
   })
 }
 
 function update (_this = {}) {
+  _this.loading = true
   api.put(`/admin/users/${_this.id}`, _this.form).then((result) => {
+    _this.loading = false
     _this.$message.success('success')
+    _this.$router.push('/users')
   }).catch((err) => {
      _this.$message.error(err.toString())
   })
