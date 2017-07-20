@@ -27,7 +27,7 @@
         el-option(v-for='item in options', :label='item.label', :value='item.value')
     el-form-item(label='', v-if='!fullPage')
       el-button(type='primary', @click='onSubmit') 发布
-      el-button(type='danger', @click="$router.push('/posts')") 关闭
+      el-button(type='danger', @click="window.close()") 关闭
 </template>
 
 <script>
@@ -111,7 +111,7 @@ function updatePost(_this) {
   api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
   .then((result) => {
      _this.$message.success('success')
-     window.history.go(-1)
+     setTimeout(() => {window.close()}, 500)
   }).catch((err) => {
      _this.$message.error(err.toString())
   })

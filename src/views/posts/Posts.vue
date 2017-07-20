@@ -24,10 +24,10 @@
         //- el-button(size='small',
         //-           @click='currentRow = scope.row, handleEdit(scope.row)') 编辑
         el-button(size='small',
-                  @click='stateVisible = true, currentRow = scope.row') 状态
+                  @click.stop='stateVisible = true, currentRow = scope.row') 状态
         el-button(size='small',
-                  @click='previewVisible = true, currentRow = scope.row') 预览
-        el-button(size='small',@click="openDestroyBox(scope.$index, scope.row)", type='danger') 删除
+                  @click.stop='previewVisible = true, currentRow = scope.row') 预览
+        el-button(size='small',@click.stop="openDestroyBox(scope.$index, scope.row)", type='danger') 删除
 
   .pagination
     el-select.limits(v-model='params.limit', placeholder='请选择')
