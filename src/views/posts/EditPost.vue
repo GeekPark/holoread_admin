@@ -132,14 +132,24 @@ function getPost(_this) {
 }
 
 function ws(_this) {
-  const socket = socketIO.connect(config.ws);
-  setInterval(() => {
-    _this.$store.commit('SET_SOCKET_STATE', socket.io.readyState)
-  }, 2000)
-  socket.emit('lock', {article: _this.form})
-  socket.on('lockState', function (data) {
-     _this.$store.commit('SET_SOCKET_INFO', data)
-  })
+  const socket = new WebSocket(config.ws);
+  socket.onopen = function open() {
+    setInterval(() => {
+      _this.$store.commit('SET_SOCKET_STATE', socket.readyState)
+    }, 2000)
+    socket.send(JSON.stringify({channel: 'lock', article: _this.form}))
+  };
+
+  socket.onclose = function close() {
+    // _this.$store.commit('SET_SOCKET_STATE', 3)
+  };
+
+  socket.onmessage = function incoming(data) {
+    const json = JSON.parse(data.data)
+    if (json.channel === 'lockState') {
+       _this.$store.commit('SET_SOCKET_INFO', json)
+    }
+  };
 }
 
 function delHtmlTag(str) {

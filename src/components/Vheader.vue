@@ -35,10 +35,10 @@ export default {
     },
     wsState() {
       const state = this.$store.state.wsState
-      if (state === 'closed') {
-        return '连接已关闭'
-      } else if (state === 'opening') {
-        return '正在建立链接...'
+      if (state === 0) {
+        return '正在连接'
+      } else if (state === 2 || state === 3) {
+        return '连接已经关闭'
       } else {
         return ''
       }
