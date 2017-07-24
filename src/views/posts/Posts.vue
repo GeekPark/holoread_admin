@@ -1,28 +1,32 @@
 <template lang="jade">
 #admin-articles.admin(v-loading.body="loading")
   .title
-    h1 {{$route.meta.title}}
-    el-radio-group(v-model='params.language')
-      el-radio(label='') 全部
-      el-radio(label='en') 英文
-      el-radio(label='cn') 中文
-    el-input(placeholder='请输入标题搜索',
+    el-tabs(v-model='params.language')
+      el-tab-pane(label='全部语言', name='')
+      el-tab-pane(label='中文', name='cn')
+      el-tab-pane(label='英文', name='en')
+    el-tabs(v-model='params.state')
+      el-tab-pane(label='全部', name='')
+      el-tab-pane(label='待处理', name='pending')
+      el-tab-pane(label='已处理', name='handled')
+      el-tab-pane(label='已推荐', name='recommend')
+      el-tab-pane(label='正常显示', name='normal')
+      el-tab-pane(label='已删除', name='deleted')
+
+    el-input.search-input(placeholder='请输入标题搜索',
            icon='search',
            v-model='params.title',
            :on-icon-click='fetch',
            @keyup.enter='fetch')
 
-
   el-table(:data='listData.list', :row-class-name="tableRowClassName", @cell-click="handleEdit", border)
     el-table-column(prop='edited_title', label='标题')
-    el-table-column(prop='order', label='状态', width="50")
-    el-table-column(prop='accesses', label='访问', width="50")
-    el-table-column(prop='likes', label='收藏', width="50")
+    el-table-column(prop='state', label='状态', width="110")
+    //- el-table-column(prop='accesses', label='访问', width="50")
+    //- el-table-column(prop='likes', label='收藏', width="50")
     el-table-column(prop='publishe_at', label='创建时间', width="170")
     el-table-column(label='操作', width='190')
       template(scope='scope')
-        //- el-button(size='small',
-        //-           @click='currentRow = scope.row, handleEdit(scope.row)') 编辑
         el-button(size='small',
                   @click.stop='stateVisible = true, currentRow = scope.row') 状态
         el-button(size='small',
@@ -33,8 +37,9 @@
     el-select.limits(v-model='params.limit', placeholder='请选择')
       el-option(v-for='item in limits', :label='item', :value='item')
     el-button(@click='pre') 上一页
+    | &nbsp &nbsp
     el-button(@click='next') 下一页
-    h2 共 {{listData.meta.total_count}} 条
+    h2 共 {{listData.count}} 条
 
   el-dialog(:title='currentRow.edited_title', v-model='previewVisible', size='tiny')
     p(v-html='previewHtml()')
@@ -43,7 +48,7 @@
       el-button(type='primary', @click='previewVisible = false') 确 定
 
   el-dialog(:title='currentRow.edited_title', v-model='stateVisible', size='tiny')
-    el-select(v-model='currentRow.order', placeholder='请选择')
+    el-select(v-model='currentRow.state', placeholder='请选择')
       el-option(v-for='item in options', :label='item.label', :value='item.value')
     span.dialog-footer(slot='footer')
       el-button(@click='stateVisible = false') 取 消
@@ -64,31 +69,20 @@ export default {
         last: null,
         first: null,
         title: null,
-        limit: 20,
+        limit: 40,
         language: '',
+        state: '',
       },
       listData: {
-        meta: {
-          total_count: 0,
-          limit_value: 0
-        }
+        count: 0
       },
       loading: false,
       previewVisible: false,
       stateVisible: false,
       currentRow: {},
       currentPage: 1,
-      limits: [20, 50, 100],
-      options: [{
-        value: -1,
-        label: '隐藏'
-      }, {
-        value: 0,
-        label: '正常显示'
-      }, {
-        value: 1,
-        label: '编辑推荐'
-      }],
+      limits: [20, 40, 100],
+      options: this.$store.state.articleStates,
     }
   },
   methods: {
@@ -99,18 +93,11 @@ export default {
       return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content;
     },
     handleEdit (el) {
-      api.post(`admin/articles/${el._id}/editing`)
-      .then(result => {
-        window.open(`/posts/edit?id=${el._id}`)
-      }).catch(error => {
-        if (error.response) {
-          this.$message.error(`${error.response.data.data.editing.nickname} 正在编辑!!! 已经锁定`);
-        }
-      })
+      window.open(`/posts/edit?id=${el._id}`)
     },
     editState() {
       api.put(`admin/articles/${this.currentRow._id}`, {
-        order: this.currentRow.order
+        state: this.currentRow.state
       }).then(result => {
         this.$message.success('success')
         this.stateVisible = false
@@ -132,9 +119,8 @@ export default {
       this.fetch()
     },
     handleDestroy(index, val, list) {
-      api.delete(`${url}/${val._id}`, {}).then((result) => {
+      api.put(`${url}/${val._id}`, {state: 'deleted'}).then((result) => {
         this.$message.success('success')
-        console.log(index)
         this.fetch()
       }).catch((err) => {
         console.log(err)
@@ -146,7 +132,7 @@ export default {
       api.get(url, {params: this.params}).then((result) => {
         this.loading = false
         if (result.data.data.list.length <= 0) {
-          this.$message.error('没有数据啦!!')
+          this.$message.error('无数据!!')
           return;
         }
         this.listData = result.data.data
@@ -192,6 +178,9 @@ export default {
     },
     'params.language': function () {
       setTimeout(() => {this.fetch()}, 100)
+    },
+    'params.state': function () {
+      setTimeout(() => {this.fetch()}, 100)
     }
   },
   mounted () {
@@ -202,27 +191,36 @@ export default {
 
 <style lang="stylus">
 #admin-articles
-  .el-input
+  .title
+    display: flex;
+    align-items: center;
+
+  .search-input
     width 200px
-    float right
+    position: absolute;
+    right: 50px;
   .el-dialog div
     img, iframe
       width 100%
   .el-table
     font-size 13px
   .limits
-    top 12px
     margin-right 10px
-
+    width 70px
   img
     width 100%
+  .pagination
+    margin-top 10px
 
   .el-table .cn-row {
     background: #c9e5f5;
   }
-
   .el-table .positive-row {
     background: #e2f0e4;
+  }
+  .el-tabs {
+    display inline-block;
+    margin-top 13px;
   }
 
 

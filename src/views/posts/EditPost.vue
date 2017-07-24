@@ -8,7 +8,7 @@
       .reference
         span.cn.title {{form.origin_title}}
         el-input.en.title(placeholder='请输入标题 必填', v-model='form.edited_title')
-    el-form-item(:label='fullPage ? "": "正文"')
+    el-form-item(:label='fullPage ? "": "显示正文"')
       .reference
           .cn.content(v-html='form.origin_content')
           veditor#veditor
@@ -23,18 +23,19 @@
     el-form-item(label='URL', required, v-if='!fullPage')
       el-input(placeholder='', v-model='form.url')
     el-form-item(label='状态', required, v-if='!fullPage')
-      el-select(v-model='form.order', placeholder='请选择')
+      el-select(v-model='form.state', placeholder='请选择')
         el-option(v-for='item in options', :label='item.label', :value='item.value')
     el-form-item(label='', v-if='!fullPage')
       el-button(type='primary', @click='onSubmit') 发布
-      el-button(type='danger', @click="window.close()") 关闭
+      el-button(type='danger', @click="close") 关闭窗口
 </template>
 
 <script>
 
 import tools    from '../../tools'
 import api      from '../../stores/api'
-
+import socketIO from 'socket.io-client'
+import config   from '../../config.js'
 export default {
   data () {
     return {
@@ -46,18 +47,9 @@ export default {
         origin_content: '',
         trans_content:  '',
         summary:        '',
-        order:          0,
+        state:          '',
       },
-      options: [{
-        value: -1,
-        label: '隐藏'
-      }, {
-        value: 0,
-        label: '正常显示'
-      }, {
-        value: 1,
-        label: '编辑推荐'
-      }],
+      options: this.$store.state.articleStates,
       fullPage: false
     }
   },
@@ -69,7 +61,9 @@ export default {
   methods: {
     onSubmit() {
       updatePost(this)
-      // createPost(this)
+    },
+    close() {
+      window.close()
     }
   },
   mounted () {
@@ -93,7 +87,6 @@ export default {
     }
   }
 }
-
 
 
 function getContent(_this) {
@@ -132,9 +125,20 @@ function getPost(_this) {
   .then((result) => {
     _this.form = result.data.data
     addContent(_this)
-
+    ws(_this)
   }).catch((err) => {
      _this.$message.error(err.toString())
+  })
+}
+
+function ws(_this) {
+  const socket = socketIO.connect(config.ws);
+  setInterval(() => {
+    _this.$store.commit('SET_SOCKET_STATE', socket.io.readyState)
+  }, 2000)
+  socket.emit('lock', {article: _this.form})
+  socket.on('lockState', function (data) {
+     _this.$store.commit('SET_SOCKET_INFO', data)
   })
 }
 

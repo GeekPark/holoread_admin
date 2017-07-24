@@ -2,6 +2,7 @@
 #vheader
   router-link(to="/")
       h1 &nbsp &nbsp GEEKPARK
+  p.socket {{socketMsg}} {{wsState}}
   el-menu.el-menu-demo(theme='light',
                        :default-active='activeIndex',
                        mode='horizontal',
@@ -16,10 +17,31 @@ import api from '../stores/api'
 export default {
   name: 'vheader',
   computed: {
-    state () {
+    state() {
       return this.phone === '' ||
              this.phone === null ||
              this.phone === 'null' ? '登录'  :  '退出'
+    },
+    socketMsg() {
+      const socket = this.$store.state.socket
+      const {nickname, type} = socket
+      if (type === 'success') {
+        return `锁定成功`
+      } else if (type === 'failed') {
+        return `锁定失败 ${nickname} 正在编辑`
+      } else {
+        return ''
+      }
+    },
+    wsState() {
+      const state = this.$store.state.wsState
+      if (state === 'closed') {
+        return '连接已关闭'
+      } else if (state === 'opening') {
+        return '正在建立链接...'
+      } else {
+        return ''
+      }
     }
   },
   props: ['phone'],
@@ -59,5 +81,15 @@ img
 h1
   color #000
   padding-top 5px
+.socket
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-block;
+  font-size: 20px;
+  line-height: 60px;
+  margin: 0;
+
 </style>
 

@@ -1,5 +1,6 @@
 
 import config     from '../config.js'
+import wangEditor from 'wangeditor'
 // console.log(config);
 const domain = config.qiniu
 
@@ -12,7 +13,7 @@ export default {
     return moment(obj).format(format)
   },
   editor: function (vm) {
-    const editor = new window.wangEditor('#editor');
+    const editor = new wangEditor('#editor');
     editor.create();
     vm.$store.commit('SET_EDITOR', editor)
   }
