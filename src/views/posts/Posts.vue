@@ -184,7 +184,7 @@ export default {
     }
   },
   mounted () {
-    this.fetch()
+    // this.fetch()
   }
 }
 </script>
