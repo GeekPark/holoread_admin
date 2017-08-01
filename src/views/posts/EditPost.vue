@@ -8,10 +8,10 @@
       .reference
         span.cn.title {{form.origin_title}}
         el-input.en.title(placeholder='请输入标题 必填', v-model='form.edited_title')
-    el-form-item(:label='fullPage ? "": "显示正文"')
+    el-form-item.editor-form-item(:label='fullPage ? "": "显示正文"')
       .reference
-          .cn.content(v-html='form.origin_content')
-          veditor#veditor
+        .cn.content(v-html='form.origin_content')
+        veditor#veditor
     el-form-item(label='显示标题', required, v-if='!fullPage')
       el-input(placeholder='请输入标题 必填', v-model='form.edited_title')
     el-form-item(label='机器翻译', required, v-if='!fullPage')
@@ -95,8 +95,9 @@ function getContent(_this) {
 
 function addContent(_this, val) {
   setTimeout(() => {
+    console.log('23')
     _this.$store.state.Editor.txt.html(_this.form.edited_content)
-  },100)
+  },300)
 }
 
 function updatePost(_this) {
@@ -104,9 +105,9 @@ function updatePost(_this) {
   api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
   .then((result) => {
      _this.$message.success('success')
-     setTimeout(() => {window.close()}, 500)
+     // setTimeout(() => {window.close()}, 500)
   }).catch((err) => {
-     _this.$message.error(err.toString())
+     _this.$message.error(err)
   })
 }
 
@@ -158,38 +159,33 @@ function delHtmlTag(str) {
 </script>
 
 <style lang="stylus">
-
 .w-e-text-container
   height 370px !important
-
-
 #edit-post
   padding-left 10px
   padding-right 10px
 
-
 .full
   cursor pointer
   color #9DC282
-
 .trans_content
   max-height 300px
   position relative
   overflow-y scroll
   border 1px solid #E6E6E6
-
-
+.editor-form-item
+  height 430px
+  .cn
+    height 430px
 
 .reference
   position relative
   clear both
   width 100%
-
   #veditor
     position absolute
     width 50%
     right 0px
-
   .cn, .en
     width calc(50% - 22px)
     word-wrap: break-word;
@@ -198,10 +194,8 @@ function delHtmlTag(str) {
     float left
     border 1px solid #E6E6E6
     padding 0 10px
-
   .en
     border none
-
   .content
     min-height 200px
     max-height 400px
@@ -229,6 +223,7 @@ function delHtmlTag(str) {
     margin-top 0px !important
     #editor, .w-e-text-container
       height 500px !important
+
   .content
     min-height 400px
     max-height 550px

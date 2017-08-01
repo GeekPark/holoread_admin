@@ -19,9 +19,6 @@ export default {
   mounted () {
     const isLogin = localStorage.getItem('login')
     this.phone    = localStorage.getItem('user')
-
-    if(this.$route.params.debug !== true){console.log = ()=>{}}
-
     if (isLogin !== 'true' && !isAllow(this)) {this.$router.push('/login')}
   }
 }
@@ -85,7 +82,7 @@ html, body
   padding-right 30px
   background #eef1f6
   position fixed
-  z-index 2
+  z-index 99999
   display block
   top 0
   left 0

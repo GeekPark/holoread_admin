@@ -66,8 +66,6 @@ export default {
   data() {
     return {
       params: {
-        last: null,
-        first: null,
         title: null,
         limit: 40,
         language: '',
@@ -108,32 +106,30 @@ export default {
     },
     pre() {
       const first  = this.listData.list[0].published
-      this.params.first = first
-      this.params.last = null
-      this.fetch()
+      this.$router.push({path: '/posts', query: {last: null, first: first}})
     },
     next() {
       const last  = this.listData.list[this.listData.list.length - 1].published
-      this.params.last = last
-      this.params.first = null
-      this.fetch()
+      this.$router.push({path: '/posts', query: {last: last, first: null}})
     },
     handleDestroy(index, val, list) {
-      api.put(`${url}/${val._id}`, {state: 'deleted'}).then((result) => {
+      api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
         this.$message.success('success')
         this.fetch()
-      }).catch((err) => {
+      }).catch(err => {
         console.log(err)
         this.$message.error(err.toString())
       })
     },
     fetch() {
       this.loading = true
-      api.get(url, {params: this.params}).then((result) => {
+      const params = Object.assign(this.$route.query, this.params)
+      console.log(params)
+      api.get(url, {params: params}).then((result) => {
         this.loading = false
         if (result.data.data.list.length <= 0) {
           this.$message.error('无数据!!')
-          return;
+          return
         }
         this.listData = result.data.data
       }).catch(error => {
@@ -143,23 +139,23 @@ export default {
     },
     openDestroyBox(index, val) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.handleDestroy(index, val)
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.handleDestroy(index, val)
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     tableRowClassName(row, index) {
       if (row.is_cn) {
-        return 'cn-row';
+        return 'cn-row'
       }
-      return '';
+      return ''
     }
   },
   watch: {
@@ -181,10 +177,13 @@ export default {
     },
     'params.state': function () {
       setTimeout(() => {this.fetch()}, 100)
+    },
+    '$route.query': function () {
+      setTimeout(() => {this.fetch()}, 100)
     }
   },
   mounted () {
-    // this.fetch()
+    this.fetch()
   }
 }
 </script>

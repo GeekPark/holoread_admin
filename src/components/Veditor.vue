@@ -9,7 +9,9 @@ import tools from '../tools'
 export default {
   name: 'veditor',
   mounted () {
-    tools.editor(this)
+    setTimeout(() => {
+      tools.editor(this)
+    }, 200)
   }
 }
 </script>
