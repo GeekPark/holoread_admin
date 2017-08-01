@@ -21,9 +21,9 @@
 
   el-table(:data='listData.list', :row-class-name="tableRowClassName", @cell-click="handleEdit", border)
     el-table-column(prop='edited_title', label='标题')
-    el-table-column(prop='state', label='状态', width="110")
-    //- el-table-column(prop='accesses', label='访问', width="50")
-    //- el-table-column(prop='likes', label='收藏', width="50")
+    el-table-column(label='状态', width="110")
+      template(scope='scope')
+        span(v-bind:class="{deleted: scope.row.state === 'deleted'}") {{scope.row.state}}
     el-table-column(prop='publishe_at', label='创建时间', width="170")
     el-table-column(label='操作', width='190')
       template(scope='scope')
@@ -209,17 +209,16 @@ export default {
     width 100%
   .pagination
     margin-top 10px
+  .deleted
+    color rgb(255, 102, 96)
 
-  .el-table .cn-row {
-    background: #c9e5f5;
-  }
-  .el-table .positive-row {
-    background: #e2f0e4;
-  }
-  .el-tabs {
-    display inline-block;
-    margin-top 13px;
-  }
+  .el-table .cn-row
+    background #c9e5f5
+  .el-table .positive-row
+    background #e2f0e4
+  .el-tabs
+    display inline-block
+    margin-top 13px
 
 
 </style>
