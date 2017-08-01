@@ -1,8 +1,7 @@
 import config from '../config'
 import router from '../routers.js'
-import store  from './index.js'
 
-const request = axios.create({
+const request = window.axios.create({
   baseURL: `${config.host}/api`,
   timeout: 10000,
   withCredentials: true, // 允许跨域 cookie
@@ -16,12 +15,14 @@ const request = axios.create({
     }
     return json
   }]
-});
+})
 
 // Add a request interceptor
 request.interceptors.request.use(function (config) {
   config.params = Object.assign({}, config.params)
-  if (config.params.start > 0) {config.params.start = config.params.start - 1}
+  if (config.params.start > 0) {
+    config.params.start = config.params.start - 1
+  }
   return config
 }, function (error) {
   return Promise.reject(error)
@@ -37,6 +38,4 @@ request.interceptors.response.use(function (response) {
   return Promise.reject(error)
 })
 
-
-// get
 export default request

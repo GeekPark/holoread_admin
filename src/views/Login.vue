@@ -36,7 +36,7 @@ export default {
       },
       disabled: false,
       submitDisabled: false,
-      text: 'send',
+      text: 'send'
     }
   },
   directives: {
@@ -66,20 +66,20 @@ export default {
         console.log(err.data)
         this.$message.error('请求失败')
       })
-
     },
     submit () {
       this.submitDisabled = true
       setTimeout(() => {
         this.submitDisabled = false
       }, 5000)
-      api.post('admin/account/login', this.form).then((result) => {
+      api.post('admin/account/login', this.form).then(result => {
         this.$message.success('success')
-        localStorage.setItem('login', true);
-        localStorage.setItem('user', result.data.data.phone);
+        localStorage.setItem('login', true)
+        localStorage.setItem('user', result.data.data.phone)
         location.reload()
         this.$router.push('/')
-      }).catch((err) => {
+      }).catch(err => {
+        console.log(err)
         this.$message.error('请求失败')
       })
     }

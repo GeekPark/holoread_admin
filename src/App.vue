@@ -8,7 +8,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'app',
   data () {
@@ -18,8 +17,10 @@ export default {
   },
   mounted () {
     const isLogin = localStorage.getItem('login')
-    this.phone    = localStorage.getItem('user')
-    if (isLogin !== 'true' && !isAllow(this)) {this.$router.push('/login')}
+    this.phone = localStorage.getItem('user')
+    if (isLogin !== 'true' && !isAllow(this)) {
+      this.$router.push('/login')
+    }
   }
 }
 

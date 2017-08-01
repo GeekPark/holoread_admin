@@ -35,7 +35,7 @@
 
   .pagination
     el-select.limits(v-model='params.limit', placeholder='请选择')
-      el-option(v-for='item in limits', :label='item', :value='item')
+      el-option(v-for='item in limits', :label='item', :value='item', :key='item')
     el-button(@click='pre') 上一页
     | &nbsp &nbsp
     el-button(@click='next') 下一页
@@ -49,27 +49,26 @@
 
   el-dialog(:title='currentRow.edited_title', v-model='stateVisible', size='tiny')
     el-select(v-model='currentRow.state', placeholder='请选择')
-      el-option(v-for='item in options', :label='item.label', :value='item.value')
+      el-option(v-for='item in options', :label='item.label', :value='item.value', :key='item.value')
     span.dialog-footer(slot='footer')
       el-button(@click='stateVisible = false') 取 消
       el-button(type='primary', @click='editState') 确 定
 </template>
 
 <script>
-
 import api from 'stores/api'
 import tools from '../../tools'
 
 const url = 'admin/articles'
 
 export default {
-  data() {
+  data () {
     return {
       params: {
         title: null,
         limit: 40,
         language: '',
-        state: '',
+        state: ''
       },
       listData: {
         count: 0
@@ -80,7 +79,7 @@ export default {
       currentRow: {},
       currentPage: 1,
       limits: [20, 40, 100],
-      options: this.$store.state.articleStates,
+      options: this.$store.state.articleStates
     }
   },
   methods: {
@@ -88,31 +87,31 @@ export default {
       this.listData = val
     },
     previewHtml () {
-      return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content;
+      return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content
     },
     handleEdit (el) {
       window.open(`/posts/edit?id=${el._id}`)
     },
-    editState() {
+    editState () {
       api.put(`admin/articles/${this.currentRow._id}`, {
         state: this.currentRow.state
       }).then(result => {
         this.$message.success('success')
         this.stateVisible = false
-      },error => {
-        this.$message.error('error')
+      }, error => {
+        this.$message.error(error)
         this.stateVisible = false
       })
     },
-    pre() {
-      const first  = this.listData.list[0].published
+    pre () {
+      const first = this.listData.list[0].published
       this.$router.push({path: '/posts', query: {last: null, first: first}})
     },
-    next() {
-      const last  = this.listData.list[this.listData.list.length - 1].published
+    next () {
+      const last = this.listData.list[this.listData.list.length - 1].published
       this.$router.push({path: '/posts', query: {last: last, first: null}})
     },
-    handleDestroy(index, val, list) {
+    handleDestroy (index, val, list) {
       api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
         this.$message.success('success')
         this.fetch()
@@ -121,7 +120,7 @@ export default {
         this.$message.error(err.toString())
       })
     },
-    fetch() {
+    fetch () {
       this.loading = true
       const params = Object.assign(this.$route.query, this.params)
       console.log(params)
@@ -137,7 +136,7 @@ export default {
         this.$message.error(error.toString())
       })
     },
-    openDestroyBox(index, val) {
+    openDestroyBox (index, val) {
       this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -151,7 +150,7 @@ export default {
         })
       })
     },
-    tableRowClassName(row, index) {
+    tableRowClassName (row, index) {
       if (row.is_cn) {
         return 'cn-row'
       }
@@ -173,13 +172,13 @@ export default {
       })
     },
     'params.language': function () {
-      setTimeout(() => {this.fetch()}, 100)
+      setTimeout(() => { this.fetch() }, 100)
     },
     'params.state': function () {
-      setTimeout(() => {this.fetch()}, 100)
+      setTimeout(() => { this.fetch() }, 100)
     },
     '$route.query': function () {
-      setTimeout(() => {this.fetch()}, 100)
+      setTimeout(() => { this.fetch() }, 100)
     }
   },
   mounted () {

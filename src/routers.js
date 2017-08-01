@@ -1,23 +1,19 @@
-import Vue         from 'vue'
-import VueRouter   from 'vue-router'
-import config      from './config'
+import Vue from 'vue'
+import VueRouter from 'vue-router'
 
-import Index       from './views/Index.vue'
-import Errors      from './views/Errors.vue'
-import Login       from './views/Login.vue'
+import Index from './views/Index.vue'
+import Errors from './views/Errors.vue'
+import Login from './views/Login.vue'
 
-import Posts       from './views/posts/Posts.vue'
-import EditPost    from './views/posts/EditPost.vue'
+import Posts from './views/posts/Posts.vue'
+import EditPost from './views/posts/EditPost.vue'
 
-import Logs        from './views/logs/Logs.vue'
+import Logs from './views/logs/Logs.vue'
 
-
-import Users       from './views/users/Users.vue'
-import AddUser     from './views/users/AddUser.vue'
-
+import Users from './views/users/Users.vue'
+import AddUser from './views/users/AddUser.vue'
 
 Vue.use(VueRouter)
-
 
 const router = new VueRouter({
   mode: 'history',

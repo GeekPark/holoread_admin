@@ -35,7 +35,6 @@
 </template>
 
 <script>
-
 import api from '../stores/api'
 
 export default {
@@ -43,39 +42,39 @@ export default {
     return {
       sections: [{
         title: '文章管理',
-        url: '/posts',
-      },{
+        url: '/posts'
+      }, {
         title: '用户管理',
-        url: '/users',
+        url: '/users'
       }],
       quickly: [{
         title: '极客公园',
-        url: 'http://geekpark.net',
-      },{
+        url: 'http://geekpark.net'
+      }, {
         title: 'Teambition',
-        url: 'https://www.teambition.com/projects',
-      },{
+        url: 'https://www.teambition.com/projects'
+      }, {
         title: '极光推送',
-        url: 'https://www.jiguang.cn/dev/#/app/list#dev',
-      },{
+        url: 'https://www.jiguang.cn/dev/#/app/list#dev'
+      }, {
         title: 'Github',
-        url: 'https://github.com/geekpark/gpk_admin',
+        url: 'https://github.com/geekpark/gpk_admin'
       }],
       postsData: {
-        list: [],
-      },
+        list: []
+      }
     }
   },
 
   methods: {
     fetch () {
       const _this = this
-      api.get('admin/articles').then((result) => {
-        console.log(result);
+      api.get('admin/articles').then(result => {
+        console.log(result)
         _this.postsData = result.data.data
-      }).catch((err) => {
-        console.log(err);
-         _this.$message.error(err.toString())
+      }).catch(err => {
+        console.log(err)
+        _this.$message.error(err.toString())
       })
     }
   },

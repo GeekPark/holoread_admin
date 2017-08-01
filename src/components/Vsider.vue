@@ -23,29 +23,18 @@
 </template>
 
 <script>
-
 export default {
   name: 'vsider',
-  computed: {
-  },
-  data () {
-    return {
-      routes: [
-      ]
-    }
-  },
   methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath);
+    handleSelect (key, keyPath) {
+      console.log(key, keyPath)
     },
-    handleOpen(key, keyPath) {
-      console.log(key, keyPath);
+    handleOpen (key, keyPath) {
+      console.log(key, keyPath)
     },
-    handleClose(key, keyPath) {
-      console.log(key, keyPath);
+    handleClose (key, keyPath) {
+      console.log(key, keyPath)
     }
-  },
-  beforeMount () {
   }
 }
 </script>

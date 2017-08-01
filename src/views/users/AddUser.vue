@@ -63,29 +63,29 @@ export default {
 function initForm () {
   return {
     permission: ['visitor'],
-    createdAt: "",
-    country: "",
-    city: "",
-    gender:1,
-    headimgurl: "",
-    nickname: "",
-    phone: "",
-    province: "",
-    state:-1,
+    createdAt: '',
+    country: '',
+    city: '',
+    gender: 1,
+    headimgurl: '',
+    nickname: '',
+    phone: '',
+    province: '',
+    state: -1
   }
 }
 
 function fetch (_this = {}) {
   _this.loading = true
   api.get(`/admin/users/${_this.id}`).then((result) => {
-    const user = result.data.data;
+    const user = result.data.data
     Object.keys(_this.form).forEach(key => {
       _this.form[key] = user[key]
     })
     _this.loading = false
   }).catch((err) => {
-     _this.$message.error(err.toString())
-     _this.loading = false
+    _this.$message.error(err.toString())
+    _this.loading = false
   })
 }
 
@@ -96,7 +96,7 @@ function update (_this = {}) {
     _this.$message.success('success')
     _this.$router.push('/users')
   }).catch((err) => {
-     _this.$message.error(err.toString())
+    _this.$message.error(err.toString())
   })
 }
 </script>

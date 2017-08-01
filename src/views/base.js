@@ -1,22 +1,21 @@
 import api from '../stores/api'
 
 export default (options) => {
-
   let {
     methods = {},
-    data    = {},
-    watch   = {}
+    data = {},
+    watch = {}
   } = options
 
   methods = Object.assign({
-    handleSizeChange(index, val) {
+    handleSizeChange (index, val) {
       console.log(`每页 ${index} 条`)
     },
-    handleCurrentChange(index, val) {
-      this.params.start = index;
-      this.fetch();
+    handleCurrentChange (index, val) {
+      this.params.start = index
+      this.fetch()
     },
-    handleDestroy(index, val, list) {
+    handleDestroy (index, val, list) {
       api.delete(`${options.url}/${val._id}`, {}).then((result) => {
         this.$message.success('success')
         list.splice(index, 1)
@@ -25,12 +24,12 @@ export default (options) => {
         this.$message.error(err.toString())
       })
     },
-    fetch() {
+    fetch () {
       api.get(options.url, {params: this.params}).then((result) => {
         this.listData = result.data.data
       }).catch((err) => {
         console.log(err)
-         this.$message.error(err.toString())
+        this.$message.error(err.toString())
       })
     }
   }, methods)
@@ -39,7 +38,7 @@ export default (options) => {
 
   data = Object.assign({
     params: {
-      start: 1,
+      start: 1
     },
     listData: {
       meta: {
@@ -49,9 +48,7 @@ export default (options) => {
     }
   }, data)
 
-  const base =  {
-    computed: {
-    },
+  const base = {
     data () {
       return data
     },

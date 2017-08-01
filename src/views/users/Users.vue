@@ -39,8 +39,8 @@
 </template>
 
 <script>
-
 import Base from '../base'
+
 const vm = Base({
   url: 'admin/users',
   methods: {
@@ -51,7 +51,7 @@ const vm = Base({
       this.listData = val
     }
   }
-});
+})
 export default vm
 </script>
 

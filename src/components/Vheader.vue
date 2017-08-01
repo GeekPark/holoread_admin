@@ -17,12 +17,12 @@ import api from '../stores/api'
 export default {
   name: 'vheader',
   computed: {
-    state() {
+    state () {
       return this.phone === '' ||
              this.phone === null ||
-             this.phone === 'null' ? '登录'  :  '退出'
+             this.phone === 'null' ? '登录' : '退出'
     },
-    socketMsg() {
+    socketMsg () {
       const socket = this.$store.state.socket
       const {nickname, type} = socket
       if (type === 'success') {
@@ -33,7 +33,7 @@ export default {
         return ''
       }
     },
-    wsState() {
+    wsState () {
       const state = this.$store.state.wsState
       if (state === 0) {
         return '正在连接'
@@ -47,19 +47,17 @@ export default {
   props: ['phone'],
   data () {
     return {
-      activeIndex: "1",
-      routes: [
-      ]
+      activeIndex: '1'
     }
   },
   methods: {
-    handleSelect(key, keyPath) {
+    handleSelect (key, keyPath) {
       if (key === 'logout') {
         api.post('/admin/account/logout').then((result) => {
           if (result.status === 200) {
-            localStorage.setItem('user', null);
-            localStorage.setItem('login', null);
-            this.$router.push('/login');
+            localStorage.setItem('user', null)
+            localStorage.setItem('login', null)
+            this.$router.push('/login')
           }
         })
       } else {

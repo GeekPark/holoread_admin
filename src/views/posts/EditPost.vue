@@ -24,30 +24,27 @@
       el-input(placeholder='', v-model='form.url')
     el-form-item(label='状态', required, v-if='!fullPage')
       el-select(v-model='form.state', placeholder='请选择')
-        el-option(v-for='item in options', :label='item.label', :value='item.value')
+        el-option(v-for='item in options', :label='item.label', :value='item.value', :key='item.value')
     el-form-item(label='', v-if='!fullPage')
       el-button(type='primary', @click='onSubmit') 发布
       el-button(type='danger', @click="close") 关闭窗口
 </template>
 
 <script>
-
-import tools    from '../../tools'
-import api      from '../../stores/api'
-import socketIO from 'socket.io-client'
-import config   from '../../config.js'
+import api from '../../stores/api'
+import config from '../../config.js'
 export default {
   data () {
     return {
       form: {
-        edited_title:   '',
-        origin_title:   'nothing',
-        trans_title:    '无标题',
+        edited_title: '',
+        origin_title: 'nothing',
+        trans_title: '无标题',
         edited_content: '',
         origin_content: '',
-        trans_content:  '',
-        summary:        '',
-        state:          '',
+        trans_content: '',
+        summary: '',
+        state: ''
       },
       options: this.$store.state.articleStates,
       fullPage: false
@@ -59,10 +56,10 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
+    onSubmit () {
       updatePost(this)
     },
-    close() {
+    close () {
       window.close()
     }
   },
@@ -72,11 +69,11 @@ export default {
   watch: {
     'form': (val) => {
       if (val.summary === '') {
-        const content = delHtmlTag(val.edited_content);
-        val.summary = content.length >= 100 ? content.substring(0, 100) : content;
+        const content = delHtmlTag(val.edited_content)
+        val.summary = content.length >= 100 ? content.substring(0, 100) : content
       }
     },
-    'fullPage': function(val) {
+    'fullPage': function (val) {
       if (val) {
         document.getElementById('vsider').style.display = 'none'
         document.getElementById('vheader').style.display = 'none'
@@ -88,73 +85,61 @@ export default {
   }
 }
 
-
-function getContent(_this) {
-    _this.form.edited_content = _this.$store.state.Editor.txt.html()
+function getContent (_this) {
+  _this.form.edited_content = _this.$store.state.Editor.txt.html()
 }
 
-function addContent(_this, val) {
+function addContent (_this, val) {
   setTimeout(() => {
-    console.log('23')
     _this.$store.state.Editor.txt.html(_this.form.edited_content)
-  },300)
+  }, 300)
 }
 
-function updatePost(_this) {
+function updatePost (_this) {
   getContent(_this)
   api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
   .then((result) => {
-     _this.$message.success('success')
+    _this.$message.success('success')
      // setTimeout(() => {window.close()}, 500)
   }).catch((err) => {
-     _this.$message.error(err)
+    _this.$message.error(err)
   })
 }
 
-function createPost(_this) {
-  getContent(_this)
-  api.post('admin/articles', _this.form)
-  .then((result) => {
-     _this.$message.success('success')
-  }).catch((err) => {
-     _this.$message.error(err.toString())
-  })
-}
-
-function getPost(_this) {
+function getPost (_this) {
   api.get(`admin/articles/${_this.$route.query.id}`)
   .then((result) => {
     _this.form = result.data.data
     addContent(_this)
     ws(_this)
   }).catch((err) => {
-     _this.$message.error(err.toString())
+    _this.$message.error(err.toString())
   })
 }
 
-function ws(_this) {
-  const socket = new WebSocket(config.ws);
-  socket.onopen = function open() {
+function ws (_this) {
+  const socket = new WebSocket(config.ws)
+  socket.onopen = function open () {
     setInterval(() => {
       _this.$store.commit('SET_SOCKET_STATE', socket.readyState)
     }, 2000)
     socket.send(JSON.stringify({channel: 'lock', article: _this.form}))
-  };
+  }
 
-  socket.onclose = function close() {
+  socket.onclose = function close () {
     // _this.$store.commit('SET_SOCKET_STATE', 3)
-  };
+  }
 
-  socket.onmessage = function incoming(data) {
+  socket.onmessage = function incoming (data) {
     const json = JSON.parse(data.data)
     if (json.channel === 'lockState') {
-       _this.$store.commit('SET_SOCKET_INFO', json)
+      _this.$store.commit('SET_SOCKET_INFO', json)
     }
-  };
+  }
 }
 
-function delHtmlTag(str) {
-  return str.replace(/<[^>]+>/g,"");//去掉所有的html标记
+function delHtmlTag (str) {
+  return str.replace(/<[^>]+>/g, '')
 }
 </script>
 
