@@ -98,6 +98,8 @@ html, body
 
 .el-pagination
   text-align left
+.el-notification
+  top 70px !important
 
 .no-touch-bg
   user-select none

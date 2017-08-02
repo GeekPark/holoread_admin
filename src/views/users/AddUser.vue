@@ -84,7 +84,7 @@ function fetch (_this = {}) {
     })
     _this.loading = false
   }).catch((err) => {
-    _this.$message.error(err.toString())
+    _this.$notify.error(err.toString())
     _this.loading = false
   })
 }
@@ -93,10 +93,10 @@ function update (_this = {}) {
   _this.loading = true
   api.put(`/admin/users/${_this.id}`, _this.form).then((result) => {
     _this.loading = false
-    _this.$message.success('success')
+    _this.$notify.success('success')
     _this.$router.push('/users')
   }).catch((err) => {
-    _this.$message.error(err.toString())
+    _this.$notify.error(err.toString())
   })
 }
 </script>

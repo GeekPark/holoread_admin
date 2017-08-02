@@ -60,11 +60,11 @@ export default {
         }
       }, 1000)
       api.post('admin/account/sms', this.form).then(result => {
-        this.$message.success('success')
+        this.$notify.success('success')
       })
       .catch(err => {
         console.log(err.data)
-        this.$message.error('请求失败')
+        this.$notify.error('请求失败')
       })
     },
     submit () {
@@ -73,14 +73,14 @@ export default {
         this.submitDisabled = false
       }, 5000)
       api.post('admin/account/login', this.form).then(result => {
-        this.$message.success('success')
+        this.$notify.success('success')
         localStorage.setItem('login', true)
         localStorage.setItem('user', result.data.data.phone)
         location.reload()
         this.$router.push('/')
       }).catch(err => {
         console.log(err)
-        this.$message.error('请求失败')
+        this.$notify.error('请求失败')
       })
     }
   }

@@ -99,10 +99,10 @@ function updatePost (_this) {
   getContent(_this)
   api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
   .then((result) => {
-    _this.$message.success('success')
-     // setTimeout(() => {window.close()}, 500)
+    _this.$notify.success('success')
+    setTimeout(() => { window.close() }, 500)
   }).catch((err) => {
-    _this.$message.error(err)
+    _this.$notify.error(err)
   })
 }
 
@@ -113,13 +113,14 @@ function getPost (_this) {
     addContent(_this)
     ws(_this)
   }).catch((err) => {
-    _this.$message.error(err.toString())
+    _this.$notify.error(err.toString())
   })
 }
 
 function ws (_this) {
   const socket = new WebSocket(config.ws)
   socket.onopen = function open () {
+    console.log('open')
     setInterval(() => {
       _this.$store.commit('SET_SOCKET_STATE', socket.readyState)
     }, 2000)
@@ -127,10 +128,12 @@ function ws (_this) {
   }
 
   socket.onclose = function close () {
+    console.log('close')
     // _this.$store.commit('SET_SOCKET_STATE', 3)
   }
 
   socket.onmessage = function incoming (data) {
+    console.log('onmessage')
     const json = JSON.parse(data.data)
     if (json.channel === 'lockState') {
       _this.$store.commit('SET_SOCKET_INFO', json)

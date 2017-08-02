@@ -17,11 +17,11 @@ export default (options) => {
     },
     handleDestroy (index, val, list) {
       api.delete(`${options.url}/${val._id}`, {}).then((result) => {
-        this.$message.success('success')
+        this.$notify.success('success')
         list.splice(index, 1)
       }).catch((err) => {
         console.log(err)
-        this.$message.error(err.toString())
+        this.$notify.error(err.toString())
       })
     },
     fetch () {
@@ -29,7 +29,7 @@ export default (options) => {
         this.listData = result.data.data
       }).catch((err) => {
         console.log(err)
-        this.$message.error(err.toString())
+        this.$notify.error(err.toString())
       })
     }
   }, methods)

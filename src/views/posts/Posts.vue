@@ -96,10 +96,10 @@ export default {
       api.put(`admin/articles/${this.currentRow._id}`, {
         state: this.currentRow.state
       }).then(result => {
-        this.$message.success('success')
+        this.$notify.success('success')
         this.stateVisible = false
       }, error => {
-        this.$message.error(error)
+        this.$notify.error(error)
         this.stateVisible = false
       })
     },
@@ -113,11 +113,11 @@ export default {
     },
     handleDestroy (index, val, list) {
       api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
-        this.$message.success('success')
+        this.$notify.success('success')
         this.fetch()
       }).catch(err => {
         console.log(err)
-        this.$message.error(err.toString())
+        this.$notify.error(err.toString())
       })
     },
     fetch () {
@@ -127,13 +127,13 @@ export default {
       api.get(url, {params: params}).then((result) => {
         this.loading = false
         if (result.data.data.list.length <= 0) {
-          this.$message.error('无数据!!')
+          this.$notify.error('无数据!!')
           return
         }
         this.listData = result.data.data
       }).catch(error => {
         this.loading = false
-        this.$message.error(error.toString())
+        this.$notify.error(error.toString())
       })
     },
     openDestroyBox (index, val) {
@@ -144,9 +144,9 @@ export default {
       }).then(() => {
         this.handleDestroy(index, val)
       }).catch(() => {
-        this.$message({
+        this.$notify({
           type: 'info',
-          message: '已取消删除'
+          notify: '已取消删除'
         })
       })
     },

@@ -74,7 +74,7 @@ export default {
         _this.postsData = result.data.data
       }).catch(err => {
         console.log(err)
-        _this.$message.error(err.toString())
+        _this.$notify.error(err.toString())
       })
     }
   },
