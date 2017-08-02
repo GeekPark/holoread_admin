@@ -1,23 +1,26 @@
 <template lang="jade">
 #admin-articles.admin(v-loading.body="loading")
   .title
-    el-tabs(v-model='params.language')
-      el-tab-pane(label='全部语言', name='')
-      el-tab-pane(label='中文', name='cn')
-      el-tab-pane(label='英文', name='en')
-    el-tabs(v-model='params.state')
-      el-tab-pane(label='全部', name='')
-      el-tab-pane(label='待处理', name='pending')
-      el-tab-pane(label='已处理', name='handled')
-      el-tab-pane(label='已推荐', name='recommend')
-      el-tab-pane(label='正常显示', name='normal')
-      el-tab-pane(label='已删除', name='deleted')
-
-    el-input.search-input(placeholder='请输入标题搜索',
-           icon='search',
-           v-model='params.title',
-           :on-icon-click='fetch',
-           @keyup.enter='fetch')
+    .tabs
+      el-tabs(v-model='params.language', @tab-click='fetch')
+        el-tab-pane(label='全部语言', name='')
+        el-tab-pane(label='中文', name='cn')
+        el-tab-pane(label='英文', name='en')
+      el-tabs(v-model='params.state', @tab-click='fetch')
+        el-tab-pane(label='全部', name='')
+        el-tab-pane(label='待处理', name='pending')
+        el-tab-pane(label='已处理', name='handled')
+        el-tab-pane(label='已推荐', name='recommend')
+        el-tab-pane(label='正常显示', name='normal')
+        el-tab-pane(label='已删除', name='deleted')
+    .search
+      el-select.search-options(v-model="params.key",placeholder="请选择")
+          el-option(v-for="item in searchOptions", :label="item.label", :value="item.value", :key="item.value")
+      el-input.search-input(placeholder='请输入内容搜索',
+             icon='search',
+             v-model='params.value',
+             :on-icon-click='fetch',
+             @keyup.enter='fetch')
 
   el-table(:data='listData.list', :row-class-name="tableRowClassName", @cell-click="handleEdit", border)
     el-table-column(prop='edited_title', label='标题')
@@ -65,7 +68,8 @@ export default {
   data () {
     return {
       params: {
-        title: null,
+        value: '',
+        key: '',
         limit: 40,
         language: '',
         state: ''
@@ -79,7 +83,23 @@ export default {
       currentRow: {},
       currentPage: 1,
       limits: [20, 40, 100],
-      options: this.$store.state.articleStates
+      options: this.$store.state.articleStates,
+      searchOptions: [{
+        label: '机器翻译标题',
+        value: 'trans_title'
+      }, {
+        label: '已编辑标题',
+        value: 'edited_title'
+      }, {
+        label: '原文标题',
+        value: 'origin_title'
+      }, {
+        label: 'URL',
+        value: 'url'
+      }, {
+        label: '来源',
+        value: 'source'
+      }]
     }
   },
   methods: {
@@ -132,8 +152,9 @@ export default {
         }
         this.listData = result.data.data
       }).catch(error => {
+        console.log(error)
         this.loading = false
-        this.$notify.error(error.toString())
+        this.$notify.error('请求失败')
       })
     },
     openDestroyBox (index, val) {
@@ -171,12 +192,6 @@ export default {
         el.likes = el.likes ? el.likes.length : '无数据'
       })
     },
-    'params.language': function () {
-      setTimeout(() => { this.fetch() }, 100)
-    },
-    'params.state': function () {
-      setTimeout(() => { this.fetch() }, 100)
-    },
     '$route.query': function () {
       setTimeout(() => { this.fetch() }, 100)
     }
@@ -190,13 +205,14 @@ export default {
 <style lang="stylus">
 #admin-articles
   .title
-    display: flex;
-    align-items: center;
+    display flex
+    align-items center
+    justify-content space-between
 
   .search-input
     width 200px
-    position: absolute;
-    right: 50px;
+  .search-options
+    margin-right 20px
   .el-dialog div
     img, iframe
       width 100%

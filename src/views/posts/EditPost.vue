@@ -97,6 +97,8 @@ function addContent (_this, val) {
 
 function updatePost (_this) {
   getContent(_this)
+  delete _this.form.origin_content
+  delete _this.form.trans_content
   api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
   .then((result) => {
     _this.$notify.success('success')
