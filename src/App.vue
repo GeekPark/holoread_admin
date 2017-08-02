@@ -98,8 +98,11 @@ html, body
 
 .el-pagination
   text-align left
+// 编辑器的 z-index 太高了
+
 .el-notification
   top 70px !important
+  z-index 99999 !important
 
 .no-touch-bg
   user-select none

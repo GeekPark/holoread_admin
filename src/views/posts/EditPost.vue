@@ -12,8 +12,8 @@
       .reference
         .cn.content(v-html='form.origin_content')
         veditor#veditor
-    el-form-item(label='显示标题', required, v-if='!fullPage')
-      el-input(placeholder='请输入标题 必填', v-model='form.edited_title')
+    el-form-item(label='机器翻译', required, v-if='!fullPage')
+      el-input(placeholder='请输入标题 必填', v-model='form.trans_title', :disabled="true")
     el-form-item(label='机器翻译', required, v-if='!fullPage')
       p.trans_content(v-html='form.trans_content', v-if='!fullPage')
     el-form-item(label='摘要', v-if='!fullPage')
@@ -100,7 +100,7 @@ function updatePost (_this) {
   api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
   .then((result) => {
     _this.$notify.success('success')
-    setTimeout(() => { window.close() }, 500)
+    // setTimeout(() => { window.close() }, 500)
   }).catch((err) => {
     _this.$notify.error(err)
   })
