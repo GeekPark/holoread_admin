@@ -100,7 +100,7 @@ function updatePost (_this) {
   api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
   .then((result) => {
     _this.$notify.success('success')
-    // setTimeout(() => { window.close() }, 500)
+    setTimeout(() => { window.close() }, 500)
   }).catch((err) => {
     _this.$notify.error(err)
   })
