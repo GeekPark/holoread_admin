@@ -2,11 +2,11 @@
 #admin-articles.admin(v-loading.body="loading")
   .title
     .tabs
-      el-tabs(v-model='params.language', @tab-click='fetch')
+      el-tabs(v-model='params.language', @tab-click='handleLanguage')
         el-tab-pane(label='全部语言', name='')
         el-tab-pane(label='中文', name='cn')
         el-tab-pane(label='英文', name='en')
-      el-tabs(v-model='params.state', @tab-click='fetch')
+      el-tabs(v-model='params.state', @tab-click='handleState')
         el-tab-pane(label='全部', name='')
         el-tab-pane(label='待处理', name='pending')
         el-tab-pane(label='已处理', name='handled')
@@ -34,7 +34,7 @@
                   @click.stop='stateVisible = true, currentRow = scope.row') 状态
         el-button(size='small',
                   @click.stop='previewVisible = true, currentRow = scope.row') 预览
-        el-button(size='small',@click.stop="openDestroyBox(scope.$index, scope.row)", type='danger') 删除
+        el-button(size='small',@click.stop="handleDestroy(scope.row)", type='danger') 删除
 
   .pagination
     el-select.limits(v-model='params.limit', placeholder='请选择')
@@ -71,8 +71,8 @@ export default {
         value: '',
         key: '',
         limit: 40,
-        language: '',
-        state: ''
+        language: this.$route.query.language || '',
+        state: this.$route.query.state || ''
       },
       listData: {
         count: 0
@@ -125,13 +125,13 @@ export default {
     },
     pre () {
       const first = this.listData.list[0].published
-      this.$router.push({path: '/posts', query: {last: null, first: first}})
+      this.$router.push({path: '/posts', query: {last: null, first: first, language: this.params.language, state: this.params.state}})
     },
     next () {
       const last = this.listData.list[this.listData.list.length - 1].published
-      this.$router.push({path: '/posts', query: {last: last, first: null}})
+      this.$router.push({path: '/posts', query: {last: last, first: null, language: this.params.language, state: this.params.state}})
     },
-    handleDestroy (index, val, list) {
+    handleDestroy (val) {
       api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
         this.$notify.success('success')
         this.fetch()
@@ -139,6 +139,12 @@ export default {
         console.log(err)
         this.$notify.error(err.toString())
       })
+    },
+    handleState (e) {
+      this.$router.push({path: '/posts', query: {language: this.params.language, state: e.name}})
+    },
+    handleLanguage (e) {
+      this.$router.push({path: '/posts', query: {language: e.name, state: this.params.state}})
     },
     fetch () {
       this.loading = true
@@ -155,20 +161,6 @@ export default {
         console.log(error)
         this.loading = false
         this.$notify.error('请求失败')
-      })
-    },
-    openDestroyBox (index, val) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.handleDestroy(index, val)
-      }).catch(() => {
-        this.$notify({
-          type: 'info',
-          notify: '已取消删除'
-        })
       })
     },
     tableRowClassName (row, index) {

@@ -3,7 +3,7 @@ import router from '../routers.js'
 
 const request = window.axios.create({
   baseURL: `${config.host}/api`,
-  timeout: 10000,
+  timeout: 30000,
   withCredentials: true, // 允许跨域 cookie
   headers: { 'X-Requested-With': 'XMLHttpRequest' }
 })
