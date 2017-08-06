@@ -4,43 +4,83 @@
     .group
       h1 GeekPark
     .group
-      input(type='email', v-model='form.email')
+      input(type='phone', v-model='form.phone' v-focus='true')
       span.highlight
       span.bar
-      label Email
+      label Phone
+      button.button.buttonBlue.send(type='button', @click='send', :disabled='disabled', v-bind:class="{ disabled: disabled }")
+        | {{text}}
+        .ripples.buttonRipples
+          span.ripplesCircle
     .group
-      input(type='password', v-model='form.password')
+      input(type='code', v-model='form.code', @keyup.enter='submit')
       span.highlight
       span.bar
-      label Password
-    button.button.buttonBlue(type='button', @click='submit')
+      label Code
+    button.button.buttonBlue(type='button', @click='submit', :disabled='submitDisabled', v-bind:class="{ disabled: submitDisabled }")
       | Login
       .ripples.buttonRipples
         span.ripplesCircle
     .footer
-      p.forgot Forgot password ?
 </template>
 
 <script>
 import api from '../stores/api'
-
+const time = 30
 export default {
   data () {
     return {
       form: {
-        email: '',
-        password: ''
+        phone: '',
+        code: ''
+      },
+      disabled: false,
+      submitDisabled: false,
+      text: 'send'
+    }
+  },
+  directives: {
+    focus: {
+      inserted: function (el, binding) {
+        el.focus()
       }
     }
   },
   methods: {
+    send () {
+      this.text = time
+      this.disabled = true
+      const interval = setInterval(() => {
+        if (this.text === '1') {
+          clearInterval(interval)
+          this.text = 'send'
+          this.disabled = false
+        } else {
+          this.text = `${parseInt(this.text) - 1}`
+        }
+      }, 1000)
+      api.post('admin/account/sms', this.form).then(result => {
+        this.$notify.success('success')
+      })
+      .catch(err => {
+        console.log(err.data)
+        this.$notify.error('请求失败')
+      })
+    },
     submit () {
-      api.post('admin/account/login', this.form).then((result) => {
-        localStorage.setItem('email', result.data.data.email);
-        this.$message.success('success')
+      this.submitDisabled = true
+      setTimeout(() => {
+        this.submitDisabled = false
+      }, 5000)
+      api.post('admin/account/login', this.form).then(result => {
+        this.$notify.success('success')
+        localStorage.setItem('login', true)
+        localStorage.setItem('user', result.data.data.phone)
+        location.reload()
         this.$router.push('/')
-      }).catch((err) => {
-        this.$message.error(err.toString())
+      }).catch(err => {
+        console.log(err)
+        this.$notify.error('请求失败')
       })
     }
   }
@@ -117,7 +157,7 @@ export default {
     left: 5px;
     top: 10px;
     transition: all 0.2s ease;
-    top: -20px;
+    top: -30px;
     transform: scale(.75); left: -2px;
     color: #4a89dc;
   }
@@ -219,6 +259,24 @@ export default {
 
   .buttonBlue:hover { background: #357bd8; }
 
+  .send {
+    width: 60px;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    right: 5px;
+    height: 30px;
+  }
+
+  .disabled {
+    background-color #BFBFBF
+    border-bottom 2px solid #BFBFBF
+    cursor not-allowed
+  }
+
+  .disabled:hover {
+    background-color #BFBFBF
+  }
 
   /* Ripples container */
 

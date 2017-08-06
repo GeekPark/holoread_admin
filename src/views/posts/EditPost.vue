@@ -1,48 +1,53 @@
 <template lang="jade">
-#edit-post.admin
+#edit-post.admin(v-bind:class="{ fullPage: fullPage }")
   .title
-    h1 {{$route.meta.title}}
+    h1(v-if='!fullPage') {{$route.meta.title}}
+    h2.full(@click='fullPage = !fullPage') 全屏编辑
   el-form(ref='form', :model='form', label-width='80px')
-    el-form-item(label='参考标题')
+    el-form-item(:label='fullPage ? "": "参考标题"')
       .reference
         span.cn.title {{form.origin_title}}
-        span.en.title &nbsp {{form.trans_title}}
-    el-form-item(label='参考正文')
+        el-input.en.title(placeholder='请输入标题 必填', v-model='form.edited_title')
+    el-form-item.editor-form-item(:label='fullPage ? "": "显示正文"')
       .reference
-          .cn.content(v-html='form.origin_content')
-          .en.content(v-html='form.trans_content') &nbsp
-    el-form-item(label='显示标题')
-      el-input(placeholder='请输入标题 必填', v-model='form.edited_title')
-    el-form-item(label='显示正文')
-      veditor#veditor(style="height:400px;max-height:500px;")
-    el-form-item(label='摘要')
+        .cn.content(v-html='form.origin_content')
+        veditor#veditor
+    el-form-item(label='机器翻译', required, v-if='!fullPage')
+      el-input(placeholder='请输入标题 必填', v-model='form.trans_title', :disabled="true")
+    el-form-item(label='机器翻译', required, v-if='!fullPage')
+      p.trans_content(v-html='form.trans_content', v-if='!fullPage')
+    el-form-item(label='摘要', v-if='!fullPage')
       el-input(type='textarea', placeholder='', v-model='form.summary')
-    el-form-item(label='Source')
+    el-form-item(label='Source', required, v-if='!fullPage')
       el-input(placeholder='', v-model='form.source')
-    el-form-item(label='URL')
+    el-form-item(label='URL', required, v-if='!fullPage')
       el-input(placeholder='', v-model='form.url')
-    el-form-item(label='')
+    el-form-item(label='状态', required, v-if='!fullPage')
+      el-select(v-model='form.state', placeholder='请选择')
+        el-option(v-for='item in options', :label='item.label', :value='item.value', :key='item.value')
+    el-form-item(label='', v-if='!fullPage')
       el-button(type='primary', @click='onSubmit') 发布
-      el-button(type='danger', @click="$router.push('/posts')") 关闭
+      el-button(type='danger', @click="close") 关闭窗口
 </template>
 
 <script>
-
-import tools    from '../../tools'
-import api      from '../../stores/api'
-
+import api from '../../stores/api'
+import config from '../../config.js'
 export default {
   data () {
     return {
       form: {
-        edited_title:   '',
-        origin_title:   'nothing',
-        trans_title:    '无标题',
+        edited_title: '',
+        origin_title: 'nothing',
+        trans_title: '无标题',
         edited_content: '',
         origin_content: '',
-        trans_content:  '',
-        summary:        '',
-      }
+        trans_content: '',
+        summary: '',
+        state: ''
+      },
+      options: this.$store.state.articleStates,
+      fullPage: false
     }
   },
   computed: {
@@ -51,98 +56,166 @@ export default {
     }
   },
   methods: {
-    onSubmit() {
+    onSubmit () {
       updatePost(this)
-      // createPost(this)
+    },
+    close () {
+      window.close()
     }
   },
   mounted () {
     this.id && getPost(this)
+  },
+  watch: {
+    'form': (val) => {
+      if (val.summary === '') {
+        const content = delHtmlTag(val.edited_content)
+        val.summary = content.length >= 100 ? content.substring(0, 100) : content
+      }
+    },
+    'fullPage': function (val) {
+      if (val) {
+        document.getElementById('vsider').style.display = 'none'
+        document.getElementById('vheader').style.display = 'none'
+        return
+      }
+      document.getElementById('vsider').style.display = 'block'
+      document.getElementById('vheader').style.display = 'block'
+    }
   }
 }
 
-function getContent(_this) {
-    _this.form.edited_content = _this.$store.state.htmlEditor.$txt.html()
+function getContent (_this) {
+  _this.form.edited_content = _this.$store.state.Editor.txt.html()
 }
 
-function addContent(_this, val) {
+function addContent (_this, val) {
   setTimeout(() => {
-    _this.$store.state.htmlEditor.$txt.html(_this.form.edited_content)
-  },100)
+    _this.$store.state.Editor.txt.html(_this.form.edited_content)
+  }, 300)
 }
 
-function updatePost(_this) {
+function updatePost (_this) {
   getContent(_this)
+  delete _this.form.origin_content
+  delete _this.form.trans_content
   api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
   .then((result) => {
-     _this.$message.success('success')
+    _this.$notify.success('success')
+    setTimeout(() => { window.close() }, 500)
   }).catch((err) => {
-     _this.$message.error(err.toString())
+    _this.$notify.error(err)
   })
 }
 
-function createPost(_this) {
-  getContent(_this)
-  api.post('admin/articles', _this.form)
-  .then((result) => {
-     _this.$message.success('success')
-  }).catch((err) => {
-     _this.$message.error(err.toString())
-  })
-}
-
-function getPost(_this) {
+function getPost (_this) {
   api.get(`admin/articles/${_this.$route.query.id}`)
   .then((result) => {
     _this.form = result.data.data
     addContent(_this)
-
+    ws(_this)
   }).catch((err) => {
-     _this.$message.error(err.toString())
+    _this.$notify.error(err.toString())
   })
+}
+
+function ws (_this) {
+  const socket = new WebSocket(config.ws)
+  socket.onopen = function open () {
+    console.log('open')
+    setInterval(() => {
+      _this.$store.commit('SET_SOCKET_STATE', socket.readyState)
+    }, 2000)
+    socket.send(JSON.stringify({channel: 'lock', article: _this.form}))
+  }
+
+  socket.onclose = function close () {
+    console.log('close')
+    // _this.$store.commit('SET_SOCKET_STATE', 3)
+  }
+
+  socket.onmessage = function incoming (data) {
+    console.log('onmessage')
+    const json = JSON.parse(data.data)
+    if (json.channel === 'lockState') {
+      _this.$store.commit('SET_SOCKET_INFO', json)
+    }
+  }
+}
+
+function delHtmlTag (str) {
+  return str.replace(/<[^>]+>/g, '')
 }
 </script>
 
 <style lang="stylus">
+.w-e-text-container
+  height 370px !important
 #edit-post
-  .el-input--mini
-      width 200px !important
+  padding-left 10px
+  padding-right 10px
 
-  .el-form-item
-    margin-bottom 5px !important
-
-
-.el-autocomplete-suggestion
-  border 1px solid #D7D7D7
-  background white !important
-  height 250px !important
-  overflow-y scroll !important
-  li
-    padding 10px !important
-    list-style none !important
-
-.upload-demo
-  width 300px
-  border 1px dashed #d9d9d9
-  padding 10px
+.full
   cursor pointer
+  color #9DC282
+.trans_content
+  max-height 300px
+  position relative
+  overflow-y scroll
+  border 1px solid #E6E6E6
+.editor-form-item
+  height 430px
+  .cn
+    height 430px
 
 .reference
   position relative
   clear both
   width 100%
-
+  #veditor
+    position absolute
+    width 50%
+    right 0px
   .cn, .en
-    width calc(50% - 2px)
+    width calc(50% - 22px)
     word-wrap: break-word;
     word-break: normal;
     display inline
     float left
     border 1px solid #E6E6E6
-
+    padding 0 10px
+  .en
+    border none
   .content
     min-height 200px
     max-height 400px
     overflow-y scroll
+
+.fullPage
+  width 100%
+  height 100%
+  padding 20px
+  padding-top 30px
+  margin 0
+  .full
+    position absolute
+    top 0px
+    left 20px
+    background white
+    z-index 2
+
+  .el-form-item__content
+    margin-left 0px !important
+  #veditor
+    width 50%
+    position absolute
+    right 0px
+    margin-top 0px !important
+    #editor, .w-e-text-container
+      height 500px !important
+
+  .content
+    min-height 400px
+    max-height 550px
 
 </style>

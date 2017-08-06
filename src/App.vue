@@ -1,29 +1,37 @@
 <template lang="jade">
-#app(v-loading="isLoading", element-loading-text="拼命加载中")
+#app()
   vsider
-  vheader
+  vheader(:phone='phone')
   transition(name="slide-fade")
     router-view
   vfooter
 </template>
 
 <script>
-
 export default {
   name: 'app',
-  computed: {
-    isLoading () {
-      return this.$store.state.isLoading;
+  data () {
+    return {
+      phone: ''
     }
   },
   mounted () {
+    const isLogin = localStorage.getItem('login')
+    this.phone = localStorage.getItem('user')
+    if (isLogin !== 'true' && !isAllow(this)) {
+      this.$router.push('/login')
+    }
   }
+}
+
+function isAllow (_this) {
+  return _this.$route.matched[0].path === '/html/:id'
 }
 
 </script>
 
 <style lang="stylus">
-$siderrWidth = 200px
+$siderrWidth = 130px
 $headerWidth = 60px
 
 html, body
@@ -68,9 +76,6 @@ html, body
 #vsider .el-row::-webkit-scrollbar
   display none
 
-#vsider, #vheader
-  display block !important
-
 
 #vheader
   height $headerWidth
@@ -78,7 +83,7 @@ html, body
   padding-right 30px
   background #eef1f6
   position fixed
-  z-index 2
+  z-index 99999
   display block
   top 0
   left 0
@@ -93,6 +98,10 @@ html, body
 
 .el-pagination
   text-align left
+// 编辑器的 z-index 太高了
+.el-notification
+  top 70px !important
+  z-index 99999 !important
 
 .no-touch-bg
   user-select none
@@ -142,31 +151,8 @@ html, body
 .row-bg
   padding 10px 0
   background-color #f9fafc
-
-
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section
-  display block
-
-body
-  line-height 1
-
-blockquote, q
-  quotes none
-
-blockquote:before, blockquote:after,
-
-q:before, q:after
-  content ''
-  content none
-
-table
-  border-collapse collapse
-  border-spacing 0
-
 html
   font-size 62.5%
-
 a
   text-decoration none
   cursor pointer
