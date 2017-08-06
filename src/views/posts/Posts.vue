@@ -152,9 +152,11 @@ export default {
       // })
     },
     handleState (e) {
+      this.fetch()
       // this.$router.push({path: '/posts', query: {language: this.params.language, state: e.name}})
     },
     handleLanguage (e) {
+      this.fetch()
       // this.$router.push({path: '/posts', query: {language: e.name, state: this.params.state}})
     },
     fetch () {
@@ -163,7 +165,7 @@ export default {
       console.log(params)
       api.get(url, {params: params}).then((result) => {
         this.loading = false
-        if (result.data.data.length <= 0) {
+        if (result.data.data === null) {
           this.$notify.error('无数据!!')
           return
         }
