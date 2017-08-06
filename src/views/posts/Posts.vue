@@ -3,11 +3,11 @@
   .title
     .tabs
       el-tabs(v-model='params.language', @tab-click='handleLanguage')
-        el-tab-pane(label='全部语言', name='')
+        el-tab-pane(label='全部语言', name='all')
         el-tab-pane(label='中文', name='cn')
         el-tab-pane(label='英文', name='en')
       el-tabs(v-model='params.state', @tab-click='handleState')
-        el-tab-pane(label='全部', name='')
+        el-tab-pane(label='全部', name='all')
         el-tab-pane(label='待处理', name='pending')
         el-tab-pane(label='已处理', name='handled')
         el-tab-pane(label='已推荐', name='recommend')
@@ -22,7 +22,7 @@
              :on-icon-click='fetch',
              @keyup.enter='fetch')
 
-  el-table(:data='listData.list', :row-class-name="tableRowClassName", @cell-click="handleEdit", border)
+  el-table(:data='listData.data', :row-class-name="tableRowClassName", @cell-click="handleEdit", border)
     el-table-column(prop='edited_title', label='标题')
     el-table-column(label='状态', width="110")
       template(scope='scope')
@@ -37,12 +37,17 @@
         el-button(size='small',@click.stop="handleDestroy(scope.row)", type='danger') 删除
 
   .pagination
-    el-select.limits(v-model='params.limit', placeholder='请选择')
-      el-option(v-for='item in limits', :label='item', :value='item', :key='item')
-    el-button(@click='pre') 上一页
-    | &nbsp &nbsp
-    el-button(@click='next') 下一页
-    h2 共 {{listData.count}} 条
+    el-pagination(@current-change='handleCurrentChange',
+                :current-page='params.start',
+                :page-size='params.count',
+                layout='total, prev, pager, next',
+                :total='listData.total')
+    //- el-select.limits(v-model='params.limit', placeholder='请选择')
+      //- el-option(v-for='item in limits', :label='item', :value='item', :key='item')
+    //- el-button(@click='pre') 上一页
+    //- | &nbsp &nbsp
+    //- el-button(@click='next') 下一页
+    //- h2 共 {{listData.count}} 条
 
   el-dialog(:title='currentRow.edited_title', v-model='previewVisible', size='tiny')
     p(v-html='previewHtml()')
@@ -70,18 +75,19 @@ export default {
       params: {
         value: '',
         key: '',
-        limit: 40,
-        language: this.$route.query.language || '',
-        state: this.$route.query.state || ''
+        language: 'all',
+        state: 'all',
+        start: 0,
+        count: 20
       },
       listData: {
-        count: 0
+        data: [],
+        total: 0
       },
       loading: false,
+      currentRow: {},
       previewVisible: false,
       stateVisible: false,
-      currentRow: {},
-      currentPage: 1,
       limits: [20, 40, 100],
       options: this.$store.state.articleStates,
       searchOptions: [{
@@ -104,47 +110,52 @@ export default {
   },
   methods: {
     search (val) {
-      this.listData = val
+      // this.listData = val
     },
     previewHtml () {
-      return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content
+      // return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content
     },
     handleEdit (el) {
       window.open(`/posts/edit?id=${el._id}`)
     },
+    handleCurrentChange (index) {
+      console.log(index)
+      this.params.start = index
+      this.fetch()
+    },
     editState () {
-      api.put(`admin/articles/${this.currentRow._id}`, {
-        state: this.currentRow.state
-      }).then(result => {
-        this.$notify.success('success')
-        this.stateVisible = false
-      }, error => {
-        this.$notify.error(error)
-        this.stateVisible = false
-      })
+      // api.put(`admin/articles/${this.currentRow._id}`, {
+      //   state: this.currentRow.state
+      // }).then(result => {
+      //   this.$notify.success('success')
+      //   this.stateVisible = false
+      // }, error => {
+      //   this.$notify.error(error)
+      //   this.stateVisible = false
+      // })
     },
     pre () {
-      const first = this.listData.list[0].published
-      this.$router.push({path: '/posts', query: {last: null, first: first, language: this.params.language, state: this.params.state}})
+      // const first = this.listData.list[0].published
+      // this.$router.push({path: '/posts', query: {last: null, first: first, language: this.params.language, state: this.params.state}})
     },
     next () {
-      const last = this.listData.list[this.listData.list.length - 1].published
-      this.$router.push({path: '/posts', query: {last: last, first: null, language: this.params.language, state: this.params.state}})
+      // const last = this.listData.list[this.listData.list.length - 1].published
+      // this.$router.push({path: '/posts', query: {last: last, first: null, language: this.params.language, state: this.params.state}})
     },
     handleDestroy (val) {
-      api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
-        this.$notify.success('success')
-        this.fetch()
-      }).catch(err => {
-        console.log(err)
-        this.$notify.error(err.toString())
-      })
+      // api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
+      //   this.$notify.success('success')
+      //   this.fetch()
+      // }).catch(err => {
+      //   console.log(err)
+      //   this.$notify.error(err.toString())
+      // })
     },
     handleState (e) {
-      this.$router.push({path: '/posts', query: {language: this.params.language, state: e.name}})
+      // this.$router.push({path: '/posts', query: {language: this.params.language, state: e.name}})
     },
     handleLanguage (e) {
-      this.$router.push({path: '/posts', query: {language: e.name, state: this.params.state}})
+      // this.$router.push({path: '/posts', query: {language: e.name, state: this.params.state}})
     },
     fetch () {
       this.loading = true
@@ -152,11 +163,11 @@ export default {
       console.log(params)
       api.get(url, {params: params}).then((result) => {
         this.loading = false
-        if (result.data.data.list.length <= 0) {
+        if (result.data.data.length <= 0) {
           this.$notify.error('无数据!!')
           return
         }
-        this.listData = result.data.data
+        this.listData = result.data
       }).catch(error => {
         console.log(error)
         this.loading = false
@@ -171,17 +182,12 @@ export default {
     }
   },
   watch: {
-    'listData.list': function (val) {
+    'listData.data': function (val) {
       val = val.forEach(el => {
         if (!el.edited_title) {
           el.edited_title = el.trans_title
         }
-        if (!el.edited_content) {
-          el.edited_content = el.trans_content
-        }
         el.publishe_at = tools.moment(el.published)
-        el.accesses = el.accesses ? el.accesses.length : '无数据'
-        el.likes = el.likes ? el.likes.length : '无数据'
       })
     },
     '$route.query': function () {
