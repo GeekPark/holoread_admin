@@ -124,15 +124,15 @@ export default {
       this.fetch()
     },
     editState () {
-      // api.put(`admin/articles/${this.currentRow._id}`, {
-      //   state: this.currentRow.state
-      // }).then(result => {
-      //   this.$notify.success('success')
-      //   this.stateVisible = false
-      // }, error => {
-      //   this.$notify.error(error)
-      //   this.stateVisible = false
-      // })
+      api.put(`admin/articles/${this.currentRow._id}`, {
+        state: this.currentRow.state
+      }).then(result => {
+        this.$notify.success('success')
+        this.stateVisible = false
+      }, error => {
+        this.$notify.error(error)
+        this.stateVisible = false
+      })
     },
     pre () {
       // const first = this.listData.list[0].published
@@ -143,13 +143,13 @@ export default {
       // this.$router.push({path: '/posts', query: {last: last, first: null, language: this.params.language, state: this.params.state}})
     },
     handleDestroy (val) {
-      // api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
-      //   this.$notify.success('success')
-      //   this.fetch()
-      // }).catch(err => {
-      //   console.log(err)
-      //   this.$notify.error(err.toString())
-      // })
+      api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
+        this.$notify.success('success')
+        this.fetch()
+      }).catch(err => {
+        console.log(err)
+        this.$notify.error(err.toString())
+      })
     },
     handleState (e) {
       this.fetch()

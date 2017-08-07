@@ -33,6 +33,7 @@
 <script>
 import api from '../../stores/api'
 import config from '../../config.js'
+import qs from 'qs'
 export default {
   data () {
     return {
@@ -44,6 +45,8 @@ export default {
         origin_content: '',
         trans_content: '',
         summary: '',
+        url: '',
+        source: '',
         state: ''
       },
       options: this.$store.state.articleStates,
@@ -67,12 +70,6 @@ export default {
     this.id && getPost(this)
   },
   watch: {
-    'form': (val) => {
-      if (val.summary === '') {
-        const content = delHtmlTag(val.edited_content)
-        val.summary = content.length >= 100 ? content.substring(0, 100) : content
-      }
-    },
     'fullPage': function (val) {
       if (val) {
         document.getElementById('vsider').style.display = 'none'
@@ -97,9 +94,11 @@ function addContent (_this, val) {
 
 function updatePost (_this) {
   getContent(_this)
+  delete _this.form.origin_title
+  delete _this.form.trans_title
   delete _this.form.origin_content
   delete _this.form.trans_content
-  api.put(`admin/articles/${_this.$route.query.id}`, _this.form)
+  api.put(`admin/articles/${_this.$route.query.id}`, qs.stringify(_this.form), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
   .then((result) => {
     _this.$notify.success('success')
     setTimeout(() => { window.close() }, 500)
@@ -111,7 +110,19 @@ function updatePost (_this) {
 function getPost (_this) {
   api.get(`admin/articles/${_this.$route.query.id}`)
   .then((result) => {
-    _this.form = result.data.data
+    const data = result.data
+    if (data.edited_content === null || data.edited_content === undefined) {
+      data.edited_title = data.trans_title
+      data.edited_content = data.trans_content
+    }
+    if (data.summary === '' || data.summary === null || data.summary === undefined) {
+      const content = delHtmlTag(data.edited_content)
+      data.summary = content.length >= 100 ? content.substring(0, 100) : content
+    }
+    Object.keys(_this.form).forEach(key => {
+      _this.form[key] = data[key]
+    })
+
     addContent(_this)
     ws(_this)
   }).catch((err) => {

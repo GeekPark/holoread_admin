@@ -3978,6 +3978,10 @@ qs@6.4.0, qs@~6.4.0:
   version "6.4.0"
   resolved "http://registry.npm.taobao.org/qs/download/qs-6.4.0.tgz#13e26d28ad6b0ffaa91312cd3bf708ed351e7233"
 
+qs@^6.5.0:
+  version "6.5.0"
+  resolved "http://registry.npm.taobao.org/qs/download/qs-6.5.0.tgz#8d04954d364def3efc55b5a0793e1e2c8b1e6e49"
+
 query-string@^4.1.0:
   version "4.3.4"
   resolved "http://registry.npm.taobao.org/query-string/download/query-string-4.3.4.tgz#bbb693b9ca915c232515b228b1a02b609043dbeb"
@@ -4940,9 +4944,9 @@ vuex@^2.0.0:
   version "2.3.1"
   resolved "http://registry.npm.taobao.org/vuex/download/vuex-2.3.1.tgz#cde8e997c1f9957719bc7dea154f9aa691d981a6"
 
-wangeditor@^3.0.4:
-  version "3.0.6"
-  resolved "http://registry.npm.taobao.org/wangeditor/download/wangeditor-3.0.6.tgz#9f64bf90a57d118990426ec87090479b5d52a23b"
+wangeditor@^3.0.7:
+  version "3.0.7"
+  resolved "http://registry.npm.taobao.org/wangeditor/download/wangeditor-3.0.7.tgz#f23693c34332a8e0b1697c00b05b3a52ffaafa75"
 
 watchpack@^1.3.1:
   version "1.4.0"

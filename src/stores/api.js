@@ -1,6 +1,8 @@
 import config from '../config'
 import router from '../routers.js'
 
+// window.axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
+
 const request = window.axios.create({
   baseURL: `${config.host}/api`,
   timeout: 30000,
