@@ -12,33 +12,32 @@
                   :key="item.value")
     el-form-item(label='nickname', placeholder='必填')
       el-input(v-model='form.nickname', auto-complete='off')
-    el-form-item(label='country')
-      el-input(v-model='form.country')
-    el-form-item(label='city')
-      el-input(v-model='form.city')
-    el-form-item(label='province')
+    //- el-form-item(label='country')
+    //-   el-input(v-model='form.country')
+    //- el-form-item(label='city')
+    //-   el-input(v-model='form.city')
+    //- el-form-item(label='province')
       el-input(v-model='form.province')
     el-form-item(label='phone')
       el-input(v-model='form.phone')
-    el-form-item(label='gender')
-      el-input(v-model='form.gender')
-    el-form-item(label='state')
+    //- el-form-item(label='gender')
+    //-   el-input(v-model='form.gender')
+    //- el-form-item(label='state')
       el-input(v-model='form.state')
     el-form-item(label='操作')
-      el-button(@click='onCancel') 取 消
+      //- el-button(@click='onCancel') 取 消
       el-button(type='primary', @click='onSubmit') 确 定
 </template>
 
 <script>
 import api from '../../stores/api'
-
 export default {
   computed: {
     options () {
       return this.$store.state.roles
     },
     id () {
-      return this.$route.query.id
+      return this.$route.params.id
     }
   },
   data () {
@@ -52,7 +51,7 @@ export default {
       update(this)
     },
     onCancel () {
-      this.$router.push('/users')
+      window.close()
     }
   },
   mounted () {
@@ -63,22 +62,16 @@ export default {
 function initForm () {
   return {
     permission: ['visitor'],
-    createdAt: '',
-    country: '',
-    city: '',
-    gender: 1,
     headimgurl: '',
     nickname: '',
-    phone: '',
-    province: '',
-    state: -1
+    phone: ''
   }
 }
 
 function fetch (_this = {}) {
   _this.loading = true
   api.get(`/admin/users/${_this.id}`).then((result) => {
-    const user = result.data.data
+    const user = result.data
     Object.keys(_this.form).forEach(key => {
       _this.form[key] = user[key]
     })
@@ -91,10 +84,12 @@ function fetch (_this = {}) {
 
 function update (_this = {}) {
   _this.loading = true
+  delete _this.form.headimgurl
+  console.log(_this.form)
   api.put(`/admin/users/${_this.id}`, _this.form).then((result) => {
     _this.loading = false
     _this.$notify.success('success')
-    _this.$router.push('/users')
+    // window.close()
   }).catch((err) => {
     _this.$notify.error(err.toString())
   })

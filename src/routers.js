@@ -11,7 +11,7 @@ import EditPost from './views/posts/EditPost.vue'
 import Logs from './views/logs/Logs.vue'
 
 import Users from './views/users/Users.vue'
-import AddUser from './views/users/AddUser.vue'
+import EditUser from './views/users/EditUser.vue'
 
 Vue.use(VueRouter)
 
@@ -34,9 +34,9 @@ const router = new VueRouter({
       component: Users,
       meta: {title: '用户'}
     },
-    { path: '/users/new',
-      name: 'users-new',
-      component: AddUser,
+    { path: '/users/edit/:id',
+      name: 'users-edited',
+      component: EditUser,
       meta: {title: '修改用户'}
     },
 

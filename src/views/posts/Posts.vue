@@ -42,12 +42,6 @@
                 :page-size='params.count',
                 layout='total, prev, pager, next',
                 :total='listData.total')
-    //- el-select.limits(v-model='params.limit', placeholder='请选择')
-      //- el-option(v-for='item in limits', :label='item', :value='item', :key='item')
-    //- el-button(@click='pre') 上一页
-    //- | &nbsp &nbsp
-    //- el-button(@click='next') 下一页
-    //- h2 共 {{listData.count}} 条
 
   el-dialog(:title='currentRow.edited_title', v-model='previewVisible', size='tiny')
     p(v-html='previewHtml()')
@@ -109,9 +103,6 @@ export default {
     }
   },
   methods: {
-    search (val) {
-      // this.listData = val
-    },
     previewHtml () {
       // return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content
     },
@@ -133,14 +124,6 @@ export default {
         this.$notify.error(error)
         this.stateVisible = false
       })
-    },
-    pre () {
-      // const first = this.listData.list[0].published
-      // this.$router.push({path: '/posts', query: {last: null, first: first, language: this.params.language, state: this.params.state}})
-    },
-    next () {
-      // const last = this.listData.list[this.listData.list.length - 1].published
-      // this.$router.push({path: '/posts', query: {last: last, first: null, language: this.params.language, state: this.params.state}})
     },
     handleDestroy (val) {
       api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
