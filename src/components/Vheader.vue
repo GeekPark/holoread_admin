@@ -28,6 +28,9 @@ export default {
       if (type === 'success') {
         return `锁定成功`
       } else if (type === 'failed') {
+        setTimeout(() => {
+          window.close()
+        }, 1000)
         return `锁定失败 ${nickname} 正在编辑`
       } else {
         return ''
