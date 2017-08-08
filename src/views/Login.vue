@@ -26,13 +26,14 @@
 
 <script>
 import api from '../stores/api'
+import qs from 'qs'
 const time = 30
 export default {
   data () {
     return {
       form: {
-        phone: '',
-        code: ''
+        phone: '18510249594',
+        code: '435122'
       },
       disabled: false,
       submitDisabled: false,
@@ -59,7 +60,7 @@ export default {
           this.text = `${parseInt(this.text) - 1}`
         }
       }, 1000)
-      api.post('admin/account/sms', this.form).then(result => {
+      api.post('sendsms', this.form).then(result => {
         this.$notify.success('success')
       })
       .catch(err => {
@@ -72,10 +73,10 @@ export default {
       setTimeout(() => {
         this.submitDisabled = false
       }, 5000)
-      api.post('admin/account/login', this.form).then(result => {
+      api.post('login', qs.stringify(this.form), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(result => {
         this.$notify.success('success')
         localStorage.setItem('login', true)
-        localStorage.setItem('user', result.data.data.phone)
+        localStorage.setItem('user', result.data.phone)
         location.reload()
         this.$router.push('/')
       }).catch(err => {

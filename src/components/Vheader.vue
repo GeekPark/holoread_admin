@@ -53,7 +53,7 @@ export default {
   methods: {
     handleSelect (key, keyPath) {
       if (key === 'logout') {
-        api.post('/admin/account/logout').then((result) => {
+        api.post('logout').then((result) => {
           if (result.status === 200) {
             localStorage.setItem('user', null)
             localStorage.setItem('login', null)
