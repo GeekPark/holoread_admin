@@ -4,7 +4,7 @@
     el-col(:span='9')
       .grid-content.bg-purple
         h1 最新文章
-        p.title(v-for='item in postsData.list', :key='item.id') {{item.title}}
+        //- p.title(v-for='item in postsData', :key='item.id') {{item.trans_title}}
     el-col(:span='5')
       .grid-content.bg-purple-light
         h1 最新活动
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import api from '../stores/api'
+// import api from '../stores/api'
 
 export default {
   data () {
@@ -64,23 +64,6 @@ export default {
         list: []
       }
     }
-  },
-
-  methods: {
-    fetch () {
-      const _this = this
-      api.get('admin/articles').then(result => {
-        console.log(result)
-        _this.postsData = result.data.data
-      }).catch(err => {
-        console.log(err)
-        _this.$notify.error(err.toString())
-      })
-    }
-  },
-
-  beforeMount () {
-    this.fetch()
   }
 }
 
