@@ -2,13 +2,14 @@
 #admin-users.admin
   .title
     h1 {{$route.meta.title}}
-    el-button(type='text', @click="$router.push('/users/new')") 添加用户
-    vsearch(type='User', kw='nickname', :cb='search')
-  el-table(:data='listData.list',)
+    //- el-button(type='text', @click="$router.push('/users/new')") 添加用户
+    //- vsearch(type='User', kw='nickname', :cb='search')
+  el-table(:data='listData.data',border)
     el-table-column(type="expand")
       template(scope="props", label-width='150px')
         el-form
           el-form-item(label="ID: ") {{props.row._id || '未填写'}}
+          el-form-item(label="Code: ") {{props.row.sms.code || '未填写'}}
           el-form-item(label="微信: ") {{props.row.wechat || '未填写'}}
           el-form-item(label="邮箱: ") {{props.row.email || '未填写'}}
           el-form-item(label="openid: ") {{props.row.openid || '未填写'}}
@@ -20,38 +21,100 @@
           el-form-item(label="更新于: ") {{props.row.updated_at || '未填写'}}
     el-table-column(type="index", width="100")
     el-table-column(prop='nickname', label='nickname')
-    el-table-column(prop='status', label=' 状态', width="100")
-    el-table-column(prop='created_at', label='创建时间', width="200")
-    el-table-column(label='操作')
+    el-table-column(prop='phone', label='phone', width="150")
+    el-table-column(prop='permission', label='permission', width="150")
+    el-table-column(prop='created_at', label='创建时间', width="180")
+    el-table-column(label='操作',width='180')
       template(scope='scope')
         el-button(size='small',
-                  @click='handleEdit(scope.$index, scope.row)') 编辑
+                  @click='handleEdit(scope.row)') 编辑
         el-button(size='small',
                   type='danger',
-                  @click='handleDestroy(scope.$index, scope.row, listData.list)') 删除
-  el-pagination(@size-change='handleSizeChange',
-                @current-change='handleCurrentChange',
-                :current-page='currentPage',
-                :page-size='listData.meta.limit_value',
+                  @click='handleDestroy(scope.row)') 删除
+  el-pagination(@current-change='handleCurrentChange',
+                :current-page='params.start',
+                :page-size='params.count',
                 layout='total, prev, pager, next',
-                :total='listData.meta.total_count')
+                :total='listData.total')
 </template>
 
 <script>
+import api from 'stores/api'
+import tools from '../../tools'
 
-import Base from '../base'
-const vm = Base({
-  url: 'admin/users',
-  methods: {
-    handleEdit (index, row) {
-      this.$router.push(`users/new?id=${row._id}`)
-    },
-    search (val) {
-      this.listData = val
+const url = 'admin/users'
+
+export default {
+  data () {
+    return {
+      params: {
+        nickname: '',
+        start: 0,
+        count: 20
+      },
+      listData: {
+        data: [],
+        total: 0
+      },
+      loading: false
     }
+  },
+  methods: {
+    handleEdit (el) {
+      window.open(`/users/edit/${el._id}`)
+    },
+    handleCurrentChange (index) {
+      console.log(index)
+      this.params.start = index
+      this.fetch()
+    },
+    handleDestroy (val) {
+      api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
+        this.$notify.success('success')
+        this.fetch()
+      }).catch(err => {
+        console.log(err)
+        this.$notify.error(err.toString())
+      })
+    },
+    fetch () {
+      this.loading = true
+      const params = Object.assign(this.$route.query, this.params)
+      console.log(params)
+      api.get(url, {params: params}).then((result) => {
+        this.loading = false
+        if (result.data.data === null) {
+          this.$notify.error('无数据!!')
+          return
+        }
+        this.listData = result.data
+      }).catch(error => {
+        console.log(error)
+        this.loading = false
+        this.$notify.error('请求失败')
+      })
+    },
+    tableRowClassName (row, index) {
+      if (row.is_cn) {
+        return 'cn-row'
+      }
+      return ''
+    }
+  },
+  watch: {
+    'listData.data': function (val) {
+      val = val.forEach(el => {
+        el.created_at = tools.moment(el.createdAt)
+      })
+    },
+    '$route.query': function () {
+      setTimeout(() => { this.fetch() }, 100)
+    }
+  },
+  mounted () {
+    this.fetch()
   }
-});
-export default vm
+}
 </script>
 
 <style lang="stylus" scoped>

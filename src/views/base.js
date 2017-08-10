@@ -1,42 +1,45 @@
 import api from '../stores/api'
 
-function fetch (_this = {}, params = {}, url = '') {
-  api.get(url, {params: params}).then((result) => {
-    _this.listData = result.data.data
-  }).catch((err) => {
-    console.log(err)
-     _this.$message.error(err.toString())
-  })
-}
-
 export default (options) => {
-
   let {
     methods = {},
-    data    = {},
-    watch   = {}
+    data = {},
+    watch = {}
   } = options
 
   methods = Object.assign({
-    handleSizeChange(index, val) {
+    handleSizeChange (index, val) {
       console.log(`每页 ${index} 条`)
     },
-    handleCurrentChange(index, val) {
-      fetch(this, {start: index - 1}, options.url)
-      console.log(`当前页: ${index - 1}`)
+    handleCurrentChange (index, val) {
+      this.params.start = index
+      this.fetch()
     },
-    handleDestroy(index, val, list) {
+    handleDestroy (index, val, list) {
       api.delete(`${options.url}/${val._id}`, {}).then((result) => {
-        this.$message.success('success')
+        this.$notify.success('success')
         list.splice(index, 1)
       }).catch((err) => {
         console.log(err)
-        this.$message.error(err.toString())
+        this.$notify.error(err.toString())
       })
-  }}, methods)
+    },
+    fetch () {
+      api.get(options.url, {params: this.params}).then((result) => {
+        this.listData = result.data.data
+      }).catch((err) => {
+        console.log(err)
+        this.$notify.error(err.toString())
+      })
+    }
+  }, methods)
+  watch = Object.assign({
+  }, watch)
 
   data = Object.assign({
-    currentPage: 0,
+    params: {
+      start: 1
+    },
     listData: {
       meta: {
         total_count: 0,
@@ -45,16 +48,14 @@ export default (options) => {
     }
   }, data)
 
-  const base =  {
-    computed: {
-    },
+  const base = {
     data () {
       return data
     },
     methods: methods,
     watch: watch,
     beforeMount () {
-      fetch(this, {start: this.currentPage}, options.url)
+      this.fetch()
     }
   }
   return base

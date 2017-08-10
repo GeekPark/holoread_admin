@@ -23,8 +23,8 @@
 </template>
 
 <script>
-
 import Base from '../base'
+
 const vm = Base({
   url: 'admin/logs',
   methods: {
@@ -32,7 +32,7 @@ const vm = Base({
       this.listData = val
     }
   }
-});
+})
 export default vm
 </script>
 

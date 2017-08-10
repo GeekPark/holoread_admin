@@ -3,22 +3,8 @@
 </template>
 
 <script>
-
 export default {
-  name: 'vfooter',
-  computed: {
-  },
-  data () {
-    return {
-    }
-  },
-  methods: {
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath);
-    }
-  },
-  beforeMount () {
-  }
+  name: 'vfooter'
 }
 </script>
 
