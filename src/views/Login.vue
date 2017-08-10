@@ -76,7 +76,9 @@ export default {
       api.post('login', qs.stringify(this.form), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(result => {
         this.$notify.success('success')
         localStorage.setItem('login', true)
-        localStorage.setItem('user', result.data.phone)
+        localStorage.setItem('phone', result.data.phone)
+        localStorage.setItem('nickname', result.data.nickname)
+        localStorage.setItem('userid', result.data._id)
         location.reload()
         this.$router.push('/')
       }).catch(err => {

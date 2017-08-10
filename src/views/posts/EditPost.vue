@@ -131,7 +131,7 @@ function getPost (_this) {
 }
 
 function ws (_this) {
-  const socket = new WebSocket(config.ws)
+  const socket = new WebSocket(`${config.ws}?userid=${localStorage.getItem('userid')}&?nickname=${localStorage.getItem('nickname')}`)
   socket.onopen = function open () {
     console.log('open')
     setInterval(() => {

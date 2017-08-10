@@ -17,7 +17,7 @@ export default {
   },
   mounted () {
     const isLogin = localStorage.getItem('login')
-    this.phone = localStorage.getItem('user')
+    this.phone = localStorage.getItem('phone')
     if (isLogin !== 'true' && !isAllow(this)) {
       this.$router.push('/login')
     }

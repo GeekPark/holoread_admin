@@ -58,7 +58,7 @@ export default {
       if (key === 'logout') {
         api.post('logout').then((result) => {
           if (result.status === 200) {
-            localStorage.setItem('user', null)
+            localStorage.setItem('phone', null)
             localStorage.setItem('login', null)
             this.$router.push('/login')
           }
