@@ -60,7 +60,7 @@ export default {
           this.text = `${parseInt(this.text) - 1}`
         }
       }, 1000)
-      api.post('login/sendsms', this.form).then(result => {
+      api.post('login/sendsms', qs.stringify(this.form), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(result => {
         this.$notify.success('success')
       })
       .catch(err => {
