@@ -111,7 +111,7 @@ function getPost (_this) {
   api.get(`admin/articles/${_this.$route.query.id}`)
   .then((result) => {
     const data = result.data
-    if (data.edited_content === null || data.edited_content === undefined) {
+    if (data.edited_content === null || data.edited_content === undefined || data.edited_content === '') {
       data.edited_title = data.trans_title
       data.edited_content = data.trans_content
     }
@@ -137,7 +137,7 @@ function ws (_this) {
     setInterval(() => {
       _this.$store.commit('SET_SOCKET_STATE', socket.readyState)
     }, 2000)
-    socket.send(JSON.stringify({channel: 'lock', article: _this.form}))
+    socket.send(JSON.stringify({channel: 'lock', article: {edited_title: _this.form.edited_title, _id: _this.id}}))
   }
 
   socket.onclose = function close () {
@@ -147,6 +147,7 @@ function ws (_this) {
 
   socket.onmessage = function incoming (data) {
     console.log('onmessage')
+    console.log(data.data)
     const json = JSON.parse(data.data)
     if (json.channel === 'lockState') {
       _this.$store.commit('SET_SOCKET_INFO', json)

@@ -32,8 +32,8 @@ export default {
   data () {
     return {
       form: {
-        phone: '18510249594',
-        code: '435122'
+        phone: '',
+        code: ''
       },
       disabled: false,
       submitDisabled: false,

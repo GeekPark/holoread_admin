@@ -9,6 +9,7 @@
       template(scope="props", label-width='150px')
         el-form
           el-form-item(label="ID: ") {{props.row._id || '未填写'}}
+          el-form-item(label="Code: ") {{props.row.sms.code || '未填写'}}
           el-form-item(label="微信: ") {{props.row.wechat || '未填写'}}
           el-form-item(label="邮箱: ") {{props.row.email || '未填写'}}
           el-form-item(label="openid: ") {{props.row.openid || '未填写'}}
