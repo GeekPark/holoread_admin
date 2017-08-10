@@ -60,7 +60,7 @@ export default {
           this.text = `${parseInt(this.text) - 1}`
         }
       }, 1000)
-      api.post('sendsms', this.form).then(result => {
+      api.post('v1/sendsms', this.form).then(result => {
         this.$notify.success('success')
       })
       .catch(err => {
