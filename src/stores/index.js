@@ -9,6 +9,7 @@ export default new Vuex.Store({
     socket: {},
     isLoading: false,
     wsState: '',
+    locked: [],
     roles: [{
       label: '游客',
       value: 'visitor'
@@ -48,6 +49,9 @@ export default new Vuex.Store({
     },
     SET_SOCKET_STATE: (state, val) => {
       state.wsState = val
+    },
+    SET_LOCKED: (state, val) => {
+      state.locked = val
     }
   }
 })

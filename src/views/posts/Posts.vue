@@ -2,11 +2,11 @@
 #admin-articles.admin(v-loading.body="loading")
   .title
     .tabs
-      el-tabs(v-model='params.language', @tab-click='handleLanguage')
+      el-tabs(v-model='params.language', @tab-click='fetch')
         el-tab-pane(label='全部语言', name='all')
         el-tab-pane(label='中文', name='cn')
         el-tab-pane(label='英文', name='en')
-      el-tabs(v-model='params.state', @tab-click='handleState')
+      el-tabs(v-model='params.state', @tab-click='fetch')
         el-tab-pane(label='全部', name='all')
         el-tab-pane(label='待处理', name='pending')
         el-tab-pane(label='已处理', name='handled')
@@ -24,9 +24,12 @@
 
   el-table(:data='listData.data', :row-class-name="tableRowClassName", @cell-click="handleEdit", border)
     el-table-column(prop='edited_title', label='标题')
-    el-table-column(label='状态', width="110")
+    el-table-column(label='状态', width="70")
       template(scope='scope')
         span(v-bind:class="{deleted: scope.row.state === 'deleted'}") {{scope.row.state}}
+    el-table-column(label='锁定', width="70")
+      template(scope='scope')
+        span(v-if='scope.row.lock') 🔓
     el-table-column(prop='publishe_at', label='创建时间', width="170")
     el-table-column(label='操作', width='190')
       template(scope='scope')
@@ -60,6 +63,7 @@
 <script>
 import api from 'stores/api'
 import tools from '../../tools'
+import config from '../../config.js'
 
 const url = 'admin/articles'
 
@@ -78,6 +82,7 @@ export default {
         data: [],
         total: 0
       },
+      locked: [],
       loading: false,
       currentRow: {},
       previewVisible: false,
@@ -110,7 +115,6 @@ export default {
       window.open(`/posts/edit?id=${el._id}`)
     },
     handleCurrentChange (index) {
-      console.log(index)
       this.params.start = index
       this.fetch()
     },
@@ -133,14 +137,6 @@ export default {
         console.log(err)
         this.$notify.error(err.toString())
       })
-    },
-    handleState (e) {
-      this.fetch()
-      // this.$router.push({path: '/posts', query: {language: this.params.language, state: e.name}})
-    },
-    handleLanguage (e) {
-      this.fetch()
-      // this.$router.push({path: '/posts', query: {language: e.name, state: this.params.state}})
     },
     fetch () {
       this.loading = true
@@ -172,6 +168,15 @@ export default {
         if (!el.edited_title) {
           el.edited_title = el.trans_title
         }
+        if (el.state === 'recommend') {
+          el.state = '🚀'
+        } else if (el.state === 'normal') {
+          el.state = '🔖'
+        } else if (el.state === 'pending') {
+          el.state = '🚧'
+        } else if (el.state === 'deleted') {
+          el.state = '❌'
+        }
         el.publishe_at = tools.moment(el.published)
       })
     },
@@ -181,8 +186,43 @@ export default {
   },
   mounted () {
     this.fetch()
+    ws(this)
+    setInterval(() => {
+      checkLock(this)
+    }, 2000)
   }
 }
+
+function ws (_this) {
+  const socket = new WebSocket(`${config.ws}?userid=${localStorage.getItem('userid')}&?nickname=${localStorage.getItem('nickname')}`)
+  socket.onopen = function open () {
+    console.log('open')
+  }
+  socket.onclose = function close () {
+    console.log('close')
+  }
+  socket.onmessage = function incoming (data) {
+    console.log('onmessage')
+    console.log(data.data)
+    const json = JSON.parse(data.data)
+    if (json.channel === 'locked') {
+      _this.locked = json.data
+    }
+  }
+}
+
+function checkLock (_this) {
+  if (_this.locked.length <= 0) {
+    return
+  }
+  _this.locked.forEach(lock => {
+    _this.listData.data = _this.listData.data.map(el => {
+      el['lock'] = el._id === lock.article
+      return el
+    })
+  })
+}
+
 </script>
 
 <style lang="stylus">
@@ -192,8 +232,11 @@ export default {
     align-items center
     justify-content space-between
 
+
   .search-input
-    width 200px
+    width 150px
+  .search-options
+    width 150px
   .search-options
     margin-right 20px
   .el-dialog div
@@ -210,6 +253,8 @@ export default {
     margin-top 10px
   .deleted
     color rgb(255, 102, 96)
+  .language-icon
+    width 20px
 
   .el-table .cn-row
     background #c9e5f5
@@ -218,6 +263,7 @@ export default {
   .el-tabs
     display inline-block
     margin-top 13px
+
 
 
 </style>
