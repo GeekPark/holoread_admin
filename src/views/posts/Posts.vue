@@ -21,7 +21,8 @@
              v-model='params.value',
              :on-icon-click='fetch',
              @keyup.enter='fetch')
-
+  .timerange
+    el-date-picker(v-model='params.timerange', type='datetimerange', :picker-options='pickerOptions', placeholder='选择时间范围', align='right', @change='fetch')
   el-table(:data='listData.data', :row-class-name="tableRowClassName", @cell-click="handleEdit", border)
     el-table-column(prop='edited_title', label='标题')
     el-table-column(label='状态', width="70")
@@ -72,11 +73,12 @@ export default {
     return {
       params: {
         value: '',
-        key: '',
+        key: 'edited_title',
         language: 'all',
         state: 'all',
         start: 0,
-        count: 20
+        count: 20,
+        timerange: []
       },
       listData: {
         data: [],
@@ -104,7 +106,34 @@ export default {
       }, {
         label: '来源',
         value: 'source'
-      }]
+      }],
+      pickerOptions: {
+        shortcuts: [{
+          text: '昨天',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '一周前',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      }
     }
   },
   methods: {
@@ -141,7 +170,14 @@ export default {
     fetch () {
       this.loading = true
       const params = Object.assign(this.$route.query, this.params)
+      if (params.timerange.length <= 1) {
+        delete params.timerange
+      } else {
+        params.timestart = Date.parse(params.timerange[0]).toString().substring(0, 10)
+        params.timeend = Date.parse(params.timerange[1]).toString().substring(0, 10)
+      }
       console.log(params)
+
       api.get(url, {params: params}).then((result) => {
         this.loading = false
         if (result.data.data === null) {
@@ -154,6 +190,9 @@ export default {
         this.loading = false
         this.$notify.error('请求失败')
       })
+    },
+    timerangeSearch () {
+      this.fetch()
     },
     tableRowClassName (row, index) {
       if (row.is_cn) {
@@ -255,6 +294,8 @@ function checkLock (_this) {
     color rgb(255, 102, 96)
   .language-icon
     width 20px
+  .timerange
+    margin-bottom 15px
 
   .el-table .cn-row
     background #c9e5f5
