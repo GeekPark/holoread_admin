@@ -23,8 +23,12 @@
              @keyup.enter='fetch')
   .timerange
     el-date-picker(v-model='params.timerange', type='datetimerange', :picker-options='pickerOptions', placeholder='选择时间范围', align='right', @change='fetch')
-  el-table(:data='listData.data', :row-class-name="tableRowClassName", @cell-click="handleEdit", border)
+
+  el-table(:data='listData.data', :row-class-name="tableRowClassName", @selection-change="handleSelectionChange", border)
+    el-table-column(type="selection", width="55")
     el-table-column(prop='edited_title', label='标题')
+      template(scope='scope')
+        span(@click.once='handleEdit(scope.row)') {{scope.row.edited_title}}
     el-table-column(label='状态', width="70")
       template(scope='scope')
         span(v-bind:class="{deleted: scope.row.state === 'deleted'}") {{scope.row.state}}
@@ -39,7 +43,8 @@
         el-button(size='small',
                   @click.stop='previewVisible = true, currentRow = scope.row') 预览
         el-button(size='small',@click.stop="handleDestroy(scope.row)", type='danger') 删除
-
+  .actions
+    el-button(@click.stop="handleDestroyList", type='danger', v-if='multipleSelection.length') 删除所选
   .pagination
     el-pagination(@current-change='handleCurrentChange',
                 :current-page='params.start',
@@ -84,6 +89,7 @@ export default {
         data: [],
         total: 0
       },
+      multipleSelection: [],
       locked: [],
       loading: false,
       currentRow: {},
@@ -167,6 +173,16 @@ export default {
         this.$notify.error(err.toString())
       })
     },
+    handleDestroyList () {
+      const list = this.multipleSelection.map(el => el._id)
+      api.put(`${url}`, {list: list, state: 'deleted'}).then(result => {
+        this.$notify.success('success')
+        this.fetch()
+      }).catch(err => {
+        console.log(err)
+        this.$notify.error(err.toString())
+      })
+    },
     fetch () {
       this.loading = true
       const params = Object.assign(this.$route.query, this.params)
@@ -191,8 +207,8 @@ export default {
         this.$notify.error('请求失败')
       })
     },
-    timerangeSearch () {
-      this.fetch()
+    handleSelectionChange (val) {
+      this.multipleSelection = val
     },
     tableRowClassName (row, index) {
       if (row.is_cn) {
@@ -255,9 +271,9 @@ function checkLock (_this) {
     return
   }
   _this.locked.forEach(lock => {
-    _this.listData.data = _this.listData.data.map(el => {
+    _this.listData.data.forEach((el, index) => {
       el['lock'] = el._id === lock.article
-      return el
+      _this.$set(_this.listData.data, index, el)
     })
   })
 }
@@ -304,6 +320,8 @@ function checkLock (_this) {
   .el-tabs
     display inline-block
     margin-top 13px
+  .actions
+    margin 10px 0
 
 
 
