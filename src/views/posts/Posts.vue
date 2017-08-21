@@ -28,7 +28,7 @@
     el-table-column(type="selection", width="55")
     el-table-column(prop='edited_title', label='标题')
       template(scope='scope')
-        span(@click.once='handleEdit(scope.row)') {{scope.row.edited_title}}
+        div(@click='handleEdit(scope.row)') {{scope.row.edited_title}}
     el-table-column(label='状态', width="70")
       template(scope='scope')
         span(v-bind:class="{deleted: scope.row.state === 'deleted'}") {{scope.row.state}}
