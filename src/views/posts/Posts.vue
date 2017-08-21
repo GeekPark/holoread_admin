@@ -78,7 +78,7 @@ export default {
     return {
       params: {
         value: '',
-        key: 'edited_title',
+        key: 'trans_title',
         language: 'all',
         state: 'all',
         start: 0,
