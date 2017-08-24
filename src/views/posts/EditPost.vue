@@ -68,6 +68,16 @@ export default {
   },
   mounted () {
     this.id && getPost(this)
+    document.onkeydown = (e) => {
+      console.log(e.target.tagName.toLowerCase())
+      if (['input', 'textarea'].indexOf(e.target.tagName.toLowerCase()) > -1) {
+        const keyCode = e.keyCode || e.which || e.charCode
+        const ctrlKey = e.ctrlKey || e.metaKey
+        if (ctrlKey && keyCode === 13) {
+          this.onSubmit()
+        }
+      }
+    }
   },
   watch: {
     'fullPage': function (val) {

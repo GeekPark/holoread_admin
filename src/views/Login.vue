@@ -4,7 +4,7 @@
     .group
       h1 GeekPark
     .group
-      input(type='phone', v-model='form.phone' v-focus='true')
+      input(type='phone', v-model.trim='form.phone' v-focus='true')
       span.highlight
       span.bar
       label Phone
@@ -13,7 +13,7 @@
         .ripples.buttonRipples
           span.ripplesCircle
     .group
-      input(type='code', v-model='form.code', @keyup.enter='submit')
+      input(type='code', v-model.trim='form.code', @keyup.enter='submit')
       span.highlight
       span.bar
       label Code
@@ -32,7 +32,7 @@ export default {
   data () {
     return {
       form: {
-        phone: '',
+        phone: localStorage.getItem('phone') || '',
         code: ''
       },
       disabled: false,

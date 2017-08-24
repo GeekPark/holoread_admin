@@ -20,7 +20,7 @@
              icon='search',
              v-model='params.value',
              :on-icon-click='fetch',
-             @keyup.enter='fetch')
+             @keyup.enter.native='fetch')
   .timerange
     el-date-picker(v-model='params.timerange', type='datetimerange', :picker-options='pickerOptions', placeholder='选择时间范围', align='right', @change='fetch')
 
@@ -29,6 +29,9 @@
     el-table-column(prop='edited_title', label='标题')
       template(scope='scope')
         div(@click='handleEdit(scope.row)') {{scope.row.edited_title}}
+    el-table-column(label='来源', width="90")
+      template(scope='scope')
+        img.source(:src='qiniuUrl(scope.row.source)', :alt='scope.row.source')
     el-table-column(label='状态', width="70")
       template(scope='scope')
         span(v-bind:class="{deleted: scope.row.state === 'deleted'}") {{scope.row.state}}
@@ -36,12 +39,10 @@
       template(scope='scope')
         span(v-if='scope.row.lock') 🔓
     el-table-column(prop='publishe_at', label='创建时间', width="170")
-    el-table-column(label='操作', width='190')
+    el-table-column(label='操作', width='140')
       template(scope='scope')
         el-button(size='small',
                   @click.stop='stateVisible = true, currentRow = scope.row') 状态
-        el-button(size='small',
-                  @click.stop='previewVisible = true, currentRow = scope.row') 预览
         el-button(size='small',@click.stop="handleDestroy(scope.row)", type='danger') 删除
   .actions
     el-button(@click.stop="handleDestroyList", type='danger', v-if='multipleSelection.length') 删除所选
@@ -51,13 +52,6 @@
                 :page-size='params.count',
                 layout='total, prev, pager, next',
                 :total='listData.total')
-
-  el-dialog(:title='currentRow.edited_title', v-model='previewVisible', size='tiny')
-    p(v-html='previewHtml()')
-    span.dialog-footer(slot='footer')
-      el-button(@click='previewVisible = false') 取 消
-      el-button(type='primary', @click='previewVisible = false') 确 定
-
   el-dialog(:title='currentRow.edited_title', v-model='stateVisible', size='tiny')
     el-select(v-model='currentRow.state', placeholder='请选择')
       el-option(v-for='item in options', :label='item.label', :value='item.value', :key='item.value')
@@ -93,7 +87,6 @@ export default {
       locked: [],
       loading: false,
       currentRow: {},
-      previewVisible: false,
       stateVisible: false,
       limits: [20, 40, 100],
       options: this.$store.state.articleStates,
@@ -143,8 +136,8 @@ export default {
     }
   },
   methods: {
-    previewHtml () {
-      // return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content
+    qiniuUrl (name) {
+      return `http://osxjx70im.bkt.clouddn.com/app/icon/${name}.png`
     },
     handleEdit (el) {
       window.open(`/posts/edit?id=${el._id}`)
@@ -322,6 +315,10 @@ function checkLock (_this) {
     margin-top 13px
   .actions
     margin 10px 0
+  .source
+    width 20px
+    height 20px
+    vertical-align middle
 
 
 

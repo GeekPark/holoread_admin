@@ -12,20 +12,9 @@
                   :key="item.value")
     el-form-item(label='nickname', placeholder='必填')
       el-input(v-model='form.nickname', auto-complete='off')
-    //- el-form-item(label='country')
-    //-   el-input(v-model='form.country')
-    //- el-form-item(label='city')
-    //-   el-input(v-model='form.city')
-    //- el-form-item(label='province')
-      el-input(v-model='form.province')
     el-form-item(label='phone')
       el-input(v-model='form.phone')
-    //- el-form-item(label='gender')
-    //-   el-input(v-model='form.gender')
-    //- el-form-item(label='state')
-      el-input(v-model='form.state')
     el-form-item(label='操作')
-      //- el-button(@click='onCancel') 取 消
       el-button(type='primary', @click='onSubmit') 确 定
 </template>
 
