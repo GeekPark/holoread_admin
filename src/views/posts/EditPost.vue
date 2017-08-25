@@ -74,6 +74,7 @@ export default {
         const keyCode = e.keyCode || e.which || e.charCode
         const ctrlKey = e.ctrlKey || e.metaKey
         if (ctrlKey && keyCode === 13) {
+          this.form.state = 'normal'
           this.onSubmit()
         }
       }
