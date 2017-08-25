@@ -34,6 +34,7 @@
 import api from '../../stores/api'
 import config from '../../config.js'
 import qs from 'qs'
+import mousetrap from 'mousetrap'
 export default {
   data () {
     return {
@@ -67,18 +68,15 @@ export default {
     }
   },
   mounted () {
+    mousetrap.bind(['command+enter', 'ctrl+enter'], () => {
+      this.$notify.warning('processing ....')
+      console.log('command enter or control enter')
+      this.form.state = 'normal'
+      this.onSubmit()
+      return false
+    })
+    document.getElementById('edit-post').focus()
     this.id && getPost(this)
-    document.onkeydown = (e) => {
-      console.log(e.target.tagName.toLowerCase())
-      if (['input', 'textarea'].indexOf(e.target.tagName.toLowerCase()) > -1) {
-        const keyCode = e.keyCode || e.which || e.charCode
-        const ctrlKey = e.ctrlKey || e.metaKey
-        if (ctrlKey && keyCode === 13) {
-          this.form.state = 'normal'
-          this.onSubmit()
-        }
-      }
-    }
   },
   watch: {
     'fullPage': function (val) {
