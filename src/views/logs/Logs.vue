@@ -2,38 +2,74 @@
 #admin-users.admin
   .title
     h1 {{$route.meta.title}}
-    vsearch(type='Log', kw='edited_title', :cb='search')
-  el-table(:data='listData.list',)
-    el-table-column(type="index", width="100")
-    el-table-column(prop='user.nickname', label='nickname')
-    el-table-column(prop='event', label='event', width="100")
-    el-table-column(prop='type', label='type', width="100")
+  el-table(:data='listData.data', border)
+    el-table-column(prop="ip", label="ip", width='180')
+    el-table-column(prop='article.edited_title', label='article')
     el-table-column(prop='created_at', label='创建时间', width="200")
-    el-table-column(label='操作')
-      template(scope='scope')
-        el-button(size='small',
-                  type='danger',
-                  @click='handleDestroy(scope.$index, scope.row, listData.list)') 删除
-  el-pagination(@size-change='handleSizeChange',
+  el-pagination(
                 @current-change='handleCurrentChange',
-                :current-page='currentPage',
-                :page-size='listData.meta.limit_value',
+                :current-page='params.start',
+                :page-size='params.count',
                 layout='total, prev, pager, next',
-                :total='listData.meta.total_count')
+                :total='listData.total')
 </template>
 
 <script>
-import Base from '../base'
+const url = 'admin/accesses'
+import api from 'stores/api'
+import tools from '../../tools'
 
-const vm = Base({
-  url: 'admin/logs',
-  methods: {
-    search (val) {
-      this.listData = val
+export default {
+  data () {
+    return {
+      params: {
+        start: 0,
+        count: 20
+      },
+      listData: {
+        data: [],
+        total: 0
+      }
     }
+  },
+  methods: {
+    handleCurrentChange (index) {
+      this.params.start = index
+      this.fetch()
+    },
+    fetch () {
+      this.loading = true
+      api.get(url, {params: this.params}).then((result) => {
+        this.loading = false
+        if (result.data.data === null) {
+          this.$notify.error('无数据!!')
+          return
+        }
+        this.listData = result.data
+      }).catch(error => {
+        console.log(error)
+        this.loading = false
+        this.$notify.error('请求失败')
+      })
+    }
+  },
+  watch: {
+    'listData.data': function (val) {
+      val = val.forEach(el => {
+        if (el.createdAt) {
+          el.created_at = tools.moment(el.createdAt)
+        }
+        el.article = el.article[0]
+      })
+    },
+    '$route.query': function () {
+      setTimeout(() => { this.fetch() }, 100)
+    }
+  },
+  mounted () {
+    this.fetch()
   }
-})
-export default vm
+}
 </script>
 
 <style lang="stylus" scoped>
