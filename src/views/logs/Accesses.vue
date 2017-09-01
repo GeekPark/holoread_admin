@@ -1,5 +1,5 @@
 <template lang="jade">
-#admin-users.admin
+#admin-accesses.admin
   .title
     h1 {{$route.meta.title}}
   el-table(:data='listData.data', border)
