@@ -3,15 +3,18 @@
   .title
     h1(v-if='!fullPage') {{$route.meta.title}}
     h2.full(@click='fullPage = !fullPage') 全屏编辑
-  el-form(ref='form', :model='form', label-width='80px')
-    el-form-item(:label='fullPage ? "": "参考标题"')
+
+  el-form(ref='form', :model='form', label-width='80px', :rules="rules")
+    el-form-item(:label='fullPage ? "": "参考标题"', prop='edited_title')
       .reference
         span.cn.title {{form.origin_title}}
         el-input.en.title(placeholder='请输入标题 必填', v-model='form.edited_title')
+
     el-form-item.editor-form-item(:label='fullPage ? "": "显示正文"')
-      .reference
+      .reference.rereference-content
         .cn.content(v-html='form.origin_content')
         veditor#veditor
+
     el-form-item(label='机器翻译', required, v-if='!fullPage')
       el-input(placeholder='请输入标题 必填', v-model='form.trans_title', :disabled="true")
     el-form-item(label='机器翻译', required, v-if='!fullPage')
@@ -51,7 +54,13 @@ export default {
         state: ''
       },
       options: this.$store.state.articleStates,
-      fullPage: false
+      fullPage: false,
+      rules: {
+        edited_title: [
+          { required: true, message: '请输入标题', trigger: 'blur' },
+          { min: 0, max: 60, message: '长度在 0 到 30 个字符', trigger: 'blur' }
+        ]
+      }
     }
   },
   computed: {
@@ -213,10 +222,10 @@ function delHtmlTag (str) {
     overflow-y scroll
 
 .fullPage
-  width 100%
-  height 100%
-  padding 20px
-  padding-top 30px
+  width calc(100% - 40px)
+  height calc(100% - 50px)
+  padding 20px !important
+  padding-top 30px !important
   margin 0
   .full
     position absolute
@@ -225,8 +234,21 @@ function delHtmlTag (str) {
     background white
     z-index 2
 
-  .el-form-item__content
-    margin-left 0px !important
+  // .el-form
+  //   height 100%
+  // .editor-form-item
+  //   height 100% !important
+
+  // .el-form-item__content
+  //   margin-left 0px !important
+  //   height 100% !important
+
+  .rereference-content
+    height 100% !important
+    .content
+      height 100%
+      max-height 100%
+
   #veditor
     width 50%
     position absolute
