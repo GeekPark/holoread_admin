@@ -64,6 +64,9 @@ function fetch (_this = {}) {
     Object.keys(_this.form).forEach(key => {
       _this.form[key] = user[key]
     })
+    if (_this.form.permission === undefined) {
+      _this.form.permission = initForm().permission
+    }
     _this.loading = false
   }).catch((err) => {
     _this.$notify.error(err.toString())

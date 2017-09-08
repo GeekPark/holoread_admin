@@ -19,7 +19,7 @@
       el-input.search-input(placeholder='请输入内容搜索',
              icon='search',
              v-model='params.value',
-             :on-icon-click='fetch',
+             :on-icon-click='preFetch',
              @keyup.enter.native='preFetch')
   .timerange
     el-date-picker(v-model='params.timerange', type='datetimerange', :picker-options='pickerOptions', placeholder='选择时间范围', align='right', @change='preFetch')
@@ -176,7 +176,8 @@ export default {
         this.$notify.error(err.toString())
       })
     },
-    preFetch() {
+    preFetch () {
+      console.log('preFetch')
       this.params.start = 0
       this.fetch()
     },
