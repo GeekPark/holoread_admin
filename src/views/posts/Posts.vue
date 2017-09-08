@@ -2,11 +2,11 @@
 #admin-articles.admin(v-loading.body="loading")
   .title
     .tabs
-      el-tabs(v-model='params.language', @tab-click='fetch')
+      el-tabs(v-model='params.language', @tab-click='preFetch')
         el-tab-pane(label='全部语言', name='all')
         el-tab-pane(label='中文', name='cn')
         el-tab-pane(label='英文', name='en')
-      el-tabs(v-model='params.state', @tab-click='fetch')
+      el-tabs(v-model='params.state', @tab-click='preFetch')
         el-tab-pane(label='全部', name='all')
         el-tab-pane(label='待处理', name='pending')
         el-tab-pane(label='已处理', name='handled')
@@ -20,9 +20,9 @@
              icon='search',
              v-model='params.value',
              :on-icon-click='fetch',
-             @keyup.enter.native='fetch')
+             @keyup.enter.native='preFetch')
   .timerange
-    el-date-picker(v-model='params.timerange', type='datetimerange', :picker-options='pickerOptions', placeholder='选择时间范围', align='right', @change='fetch')
+    el-date-picker(v-model='params.timerange', type='datetimerange', :picker-options='pickerOptions', placeholder='选择时间范围', align='right', @change='preFetch')
 
   el-table(:data='listData.data', :row-class-name="tableRowClassName", @selection-change="handleSelectionChange", border)
     el-table-column(type="selection", width="55")
@@ -175,6 +175,10 @@ export default {
         console.log(err)
         this.$notify.error(err.toString())
       })
+    },
+    preFetch() {
+      this.params.start = 0
+      this.fetch()
     },
     fetch () {
       this.loading = true
