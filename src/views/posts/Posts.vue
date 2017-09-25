@@ -150,6 +150,15 @@ export default {
       this.fetch()
     },
     editState () {
+      if (this.currentRow.state === '🚀') {
+          this.currentRow.state = 'recommend'
+        } else if (this.currentRow.state === '🔖') {
+          this.currentRow.state = 'normal'
+        } else if (this.currentRow.state === '🚧') {
+          this.currentRow.state = 'pending'
+        } else if (this.currentRow.state === '❌') {
+          this.currentRow.state = 'deleted'
+        }
       api.put(`admin/articles/${this.currentRow._id}`, {
         state: this.currentRow.state
       }).then(result => {
