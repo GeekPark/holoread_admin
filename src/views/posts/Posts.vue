@@ -2,11 +2,11 @@
 #admin-articles.admin(v-loading.body="loading")
   .title
     .tabs
-      el-tabs(v-model='params.language', @tab-click='handleLanguage')
+      el-tabs(v-model='params.language', @tab-click='preFetch')
         el-tab-pane(label='全部语言', name='all')
         el-tab-pane(label='中文', name='cn')
         el-tab-pane(label='英文', name='en')
-      el-tabs(v-model='params.state', @tab-click='handleState')
+      el-tabs(v-model='params.state', @tab-click='preFetch')
         el-tab-pane(label='全部', name='all')
         el-tab-pane(label='待处理', name='pending')
         el-tab-pane(label='已处理', name='handled')
@@ -19,36 +19,42 @@
       el-input.search-input(placeholder='请输入内容搜索',
              icon='search',
              v-model='params.value',
-             :on-icon-click='fetch',
-             @keyup.enter='fetch')
+             :on-icon-click='preFetch',
+             @keyup.enter.native='preFetch')
+  .timerange
+    el-date-picker(v-model='params.timerange', type='datetimerange', :picker-options='pickerOptions', placeholder='选择时间范围', align='right', @change='preFetch')
 
-  el-table(:data='listData.data', :row-class-name="tableRowClassName", @cell-click="handleEdit", border)
+  el-table(:data='listData.data', :row-class-name="tableRowClassName", @selection-change="handleSelectionChange", border)
+    el-table-column(type="selection", width="55")
     el-table-column(prop='edited_title', label='标题')
-    el-table-column(label='状态', width="110")
+      template(scope='scope')
+        div(@click='handleEdit(scope.row)') {{scope.row.edited_title}}
+    el-table-column(label='来源', width="90")
+      template(scope='scope')
+        img.source(:src='qiniuUrl(scope.row.source)', :alt='scope.row.source')
+    el-table-column(label='状态', width="70")
       template(scope='scope')
         span(v-bind:class="{deleted: scope.row.state === 'deleted'}") {{scope.row.state}}
+    el-table-column(label='锁定', width="70")
+      template(scope='scope')
+        span(v-if='scope.row.lock') 🔓
     el-table-column(prop='publishe_at', label='创建时间', width="170")
     el-table-column(label='操作', width='190')
       template(scope='scope')
         el-button(size='small',
                   @click.stop='stateVisible = true, currentRow = scope.row') 状态
         el-button(size='small',
-                  @click.stop='previewVisible = true, currentRow = scope.row') 预览
+                  type='info',
+                  @click.stop="handlePreview(scope.row)") 预览
         el-button(size='small',@click.stop="handleDestroy(scope.row)", type='danger') 删除
-
+  .actions
+    el-button(@click.stop="handleDestroyList", type='danger', v-if='multipleSelection.length') 删除所选
   .pagination
     el-pagination(@current-change='handleCurrentChange',
                 :current-page='params.start',
                 :page-size='params.count',
                 layout='total, prev, pager, next',
                 :total='listData.total')
-
-  el-dialog(:title='currentRow.edited_title', v-model='previewVisible', size='tiny')
-    p(v-html='previewHtml()')
-    span.dialog-footer(slot='footer')
-      el-button(@click='previewVisible = false') 取 消
-      el-button(type='primary', @click='previewVisible = false') 确 定
-
   el-dialog(:title='currentRow.edited_title', v-model='stateVisible', size='tiny')
     el-select(v-model='currentRow.state', placeholder='请选择')
       el-option(v-for='item in options', :label='item.label', :value='item.value', :key='item.value')
@@ -60,6 +66,7 @@
 <script>
 import api from 'stores/api'
 import tools from '../../tools'
+import config from '../../config.js'
 
 const url = 'admin/articles'
 
@@ -68,19 +75,21 @@ export default {
     return {
       params: {
         value: '',
-        key: '',
+        key: 'trans_title',
         language: 'all',
         state: 'all',
         start: 0,
-        count: 20
+        count: 20,
+        timerange: []
       },
       listData: {
         data: [],
         total: 0
       },
+      multipleSelection: [],
+      locked: [],
       loading: false,
       currentRow: {},
-      previewVisible: false,
       stateVisible: false,
       limits: [20, 40, 100],
       options: this.$store.state.articleStates,
@@ -99,22 +108,57 @@ export default {
       }, {
         label: '来源',
         value: 'source'
-      }]
+      }],
+      pickerOptions: {
+        shortcuts: [{
+          text: '昨天',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '一周前',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick (picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      }
     }
   },
   methods: {
-    previewHtml () {
-      // return this.currentRow.edited_content ? this.currentRow.edited_content : this.currentPage.trans_content
+    qiniuUrl (name) {
+      return `http://osxjx70im.bkt.clouddn.com/app/icon/${name}.png`
     },
     handleEdit (el) {
       window.open(`/posts/edit?id=${el._id}`)
     },
     handleCurrentChange (index) {
-      console.log(index)
       this.params.start = index
       this.fetch()
     },
     editState () {
+      if (this.currentRow.state === '🚀') {
+        this.currentRow.state = 'recommend'
+      } else if (this.currentRow.state === '🔖') {
+        this.currentRow.state = 'normal'
+      } else if (this.currentRow.state === '🚧') {
+        this.currentRow.state = 'pending'
+      } else if (this.currentRow.state === '❌') {
+        this.currentRow.state = 'deleted'
+      }
       api.put(`admin/articles/${this.currentRow._id}`, {
         state: this.currentRow.state
       }).then(result => {
@@ -125,6 +169,9 @@ export default {
         this.stateVisible = false
       })
     },
+    handlePreview (val) {
+      window.open(`https://holoread.news/preview/${val._id}`)
+    },
     handleDestroy (val) {
       api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {
         this.$notify.success('success')
@@ -134,18 +181,32 @@ export default {
         this.$notify.error(err.toString())
       })
     },
-    handleState (e) {
-      this.fetch()
-      // this.$router.push({path: '/posts', query: {language: this.params.language, state: e.name}})
+    handleDestroyList () {
+      const list = this.multipleSelection.map(el => el._id)
+      api.put(`${url}`, {list: list, state: 'deleted'}).then(result => {
+        this.$notify.success('success')
+        this.fetch()
+      }).catch(err => {
+        console.log(err)
+        this.$notify.error(err.toString())
+      })
     },
-    handleLanguage (e) {
+    preFetch () {
+      console.log('preFetch')
+      this.params.start = 0
       this.fetch()
-      // this.$router.push({path: '/posts', query: {language: e.name, state: this.params.state}})
     },
     fetch () {
       this.loading = true
       const params = Object.assign(this.$route.query, this.params)
+      if (params.timerange.length <= 1) {
+        delete params.timerange
+      } else {
+        params.timestart = Date.parse(params.timerange[0]).toString().substring(0, 10)
+        params.timeend = Date.parse(params.timerange[1]).toString().substring(0, 10)
+      }
       console.log(params)
+
       api.get(url, {params: params}).then((result) => {
         this.loading = false
         if (result.data.data === null) {
@@ -158,6 +219,9 @@ export default {
         this.loading = false
         this.$notify.error('请求失败')
       })
+    },
+    handleSelectionChange (val) {
+      this.multipleSelection = val
     },
     tableRowClassName (row, index) {
       if (row.is_cn) {
@@ -172,6 +236,15 @@ export default {
         if (!el.edited_title) {
           el.edited_title = el.trans_title
         }
+        if (el.state === 'recommend') {
+          el.state = '🚀'
+        } else if (el.state === 'normal') {
+          el.state = '🔖'
+        } else if (el.state === 'pending') {
+          el.state = '🚧'
+        } else if (el.state === 'deleted') {
+          el.state = '❌'
+        }
         el.publishe_at = tools.moment(el.published)
       })
     },
@@ -181,8 +254,43 @@ export default {
   },
   mounted () {
     this.fetch()
+    ws(this)
+    setInterval(() => {
+      checkLock(this)
+    }, 2000)
   }
 }
+
+function ws (_this) {
+  const socket = new WebSocket(`${config.ws}?userid=${localStorage.getItem('userid')}&?nickname=${localStorage.getItem('nickname')}`)
+  socket.onopen = function open () {
+    console.log('open')
+  }
+  socket.onclose = function close () {
+    console.log('close')
+  }
+  socket.onmessage = function incoming (data) {
+    console.log('onmessage')
+    console.log(data.data)
+    const json = JSON.parse(data.data)
+    if (json.channel === 'locked') {
+      _this.locked = json.data
+    }
+  }
+}
+
+function checkLock (_this) {
+  if (_this.locked.length <= 0) {
+    return
+  }
+  _this.locked.forEach(lock => {
+    _this.listData.data.forEach((el, index) => {
+      el['lock'] = el._id === lock.article
+      _this.$set(_this.listData.data, index, el)
+    })
+  })
+}
+
 </script>
 
 <style lang="stylus">
@@ -192,8 +300,11 @@ export default {
     align-items center
     justify-content space-between
 
+
   .search-input
-    width 200px
+    width 150px
+  .search-options
+    width 150px
   .search-options
     margin-right 20px
   .el-dialog div
@@ -210,6 +321,10 @@ export default {
     margin-top 10px
   .deleted
     color rgb(255, 102, 96)
+  .language-icon
+    width 20px
+  .timerange
+    margin-bottom 15px
 
   .el-table .cn-row
     background #c9e5f5
@@ -218,6 +333,13 @@ export default {
   .el-tabs
     display inline-block
     margin-top 13px
+  .actions
+    margin 10px 0
+  .source
+    width 20px
+    height 20px
+    vertical-align middle
+
 
 
 </style>

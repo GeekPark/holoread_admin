@@ -8,7 +8,8 @@ import Login from './views/Login.vue'
 import Posts from './views/posts/Posts.vue'
 import EditPost from './views/posts/EditPost.vue'
 
-import Logs from './views/logs/Logs.vue'
+import Accesses from './views/logs/Accesses.vue'
+import TranslateLog from './views/logs/TranslateLog.vue'
 
 import Users from './views/users/Users.vue'
 import EditUser from './views/users/EditUser.vue'
@@ -40,10 +41,15 @@ const router = new VueRouter({
       meta: {title: '修改用户'}
     },
 
-    { path: '/logs',
-      name: 'logs',
-      component: Logs,
-      meta: {title: ' 日志'}
+    { path: '/accesses',
+      name: 'accesses',
+      component: Accesses,
+      meta: {title: '访问日志'}
+    },
+    { path: '/translatelog',
+      name: 'translatelog',
+      component: TranslateLog,
+      meta: {title: '翻译日志'}
     },
 
     { path: '/posts',

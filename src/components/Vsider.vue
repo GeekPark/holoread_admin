@@ -15,11 +15,15 @@
             | 文章
           el-menu-item(index='/posts')  文章列表
           //- el-menu-item(index='/posts/edit') 编辑文章
-        el-submenu(index='/3')
+        el-menu-item(index='/translatelog')
           template(slot='title')
             i.el-icon-information
-            | 日志
-          el-menu-item(index='/logs')  日志列表
+            | 翻译日志
+        el-menu-item(index='/accesses')
+          template(slot='title')
+            i.el-icon-information
+            | 访问日志
+
 </template>
 
 <script>

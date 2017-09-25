@@ -19,12 +19,12 @@
           el-form-item(label="职位: ") {{props.row.title || '未填写'}}
           el-form-item(label="创建于: ") {{props.row.created_at || '未填写'}}
           el-form-item(label="更新于: ") {{props.row.updated_at || '未填写'}}
-    el-table-column(type="index", width="100")
+    el-table-column(prop="_id", label='id', width="230")
     el-table-column(prop='nickname', label='nickname')
-    el-table-column(prop='phone', label='phone', width="150")
-    el-table-column(prop='permission', label='permission', width="150")
+    el-table-column(prop='phone', label='phone', width="130")
+    el-table-column(prop='permission', label='permission', width="120")
     el-table-column(prop='created_at', label='创建时间', width="180")
-    el-table-column(label='操作',width='180')
+    el-table-column(label='操作',width='140')
       template(scope='scope')
         el-button(size='small',
                   @click='handleEdit(scope.row)') 编辑

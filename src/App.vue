@@ -46,6 +46,7 @@ html, body
   background transparent
   height calc(100%)
   width 100%
+  font-family Sans-serif
 
 .admin
   width calc(100% - $siderrWidth)
@@ -116,6 +117,9 @@ html, body
 
 .border1
   border 1px solid #D3D3D3
+.pointer
+  cursor pointer
+
 
 .slide-fade-enter-active
   transition all .1s ease
