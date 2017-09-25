@@ -39,10 +39,13 @@
       template(scope='scope')
         span(v-if='scope.row.lock') 🔓
     el-table-column(prop='publishe_at', label='创建时间', width="170")
-    el-table-column(label='操作', width='140')
+    el-table-column(label='操作', width='190')
       template(scope='scope')
         el-button(size='small',
                   @click.stop='stateVisible = true, currentRow = scope.row') 状态
+        el-button(size='small',
+                  type='info',
+                  @click.stop="handlePreview(scope.row)") 预览
         el-button(size='small',@click.stop="handleDestroy(scope.row)", type='danger') 删除
   .actions
     el-button(@click.stop="handleDestroyList", type='danger', v-if='multipleSelection.length') 删除所选
@@ -156,6 +159,9 @@ export default {
         this.$notify.error(error)
         this.stateVisible = false
       })
+    },
+    handlePreview (val) {
+      window.open(`https://holoread.news/preview/${val._id}`)
     },
     handleDestroy (val) {
       api.put(`${url}/${val._id}`, {state: 'deleted'}).then(result => {

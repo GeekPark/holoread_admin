@@ -4,7 +4,7 @@
     h1(v-if='!fullPage') {{$route.meta.title}}
     h2.full(@click='fullPage = !fullPage') 全屏编辑
 
-  el-form(ref='form', :model='form', label-width='80px', :rules="rules")
+  el-form(ref='form', :model='form', label-width='80px', :rules="rules", label-position='top')
     el-form-item(:label='fullPage ? "": "参考标题"', prop='edited_title')
       .reference
         span.cn.title {{form.origin_title}}
@@ -84,7 +84,22 @@ export default {
       this.onSubmit()
       return false
     })
-    document.getElementById('edit-post').focus()
+    setTimeout(() => {
+      const oTest = document.querySelector('#veditor #editor .w-e-toolbar')
+      const itemEl = document.querySelector('#veditor #editor .w-e-toolbar .w-e-menu')
+      const newNode = document.createElement('div')
+      newNode.innerHTML = '发布'
+      newNode.style.lineHeight = '30px'
+      newNode.style.cursor = 'pointer'
+      newNode.style.color = '#999'
+      newNode.id = 'fullscreen'
+      newNode.onclick = () => {
+        this.form.state = 'normal'
+        this.onSubmit()
+      }
+      oTest.insertBefore(newNode, itemEl)
+    }, 1000)
+
     this.id && getPost(this)
   },
   watch: {
