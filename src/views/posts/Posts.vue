@@ -23,6 +23,7 @@
              @keyup.enter.native='preFetch')
   .timerange
     el-date-picker(v-model='params.timerange', type='datetimerange', :picker-options='pickerOptions', placeholder='选择时间范围', align='right', @change='preFetch')
+    el-button(@click='clearOptions').clear 重置
 
   el-table(:data='listData.data', :row-class-name="tableRowClassName", @selection-change="handleSelectionChange", border)
     el-table-column(type="selection", width="55")
@@ -31,7 +32,7 @@
         div(@click='handleEdit(scope.row)') {{scope.row.edited_title}}
     el-table-column(label='来源', width="90")
       template(scope='scope')
-        img.source(:src='qiniuUrl(scope.row.source)', :alt='scope.row.source')
+        img.source(:src='qiniuUrl(scope.row.source)', :alt='scope.row.source', @click.stop="params.key='source'; params.value=scope.row.source; preFetch()")
     el-table-column(label='状态', width="70")
       template(scope='scope')
         span(v-bind:class="{deleted: scope.row.state === 'deleted'}") {{scope.row.state}}
@@ -69,19 +70,20 @@ import tools from '../../tools'
 import config from '../../config.js'
 
 const url = 'admin/articles'
+const defaultData = {
+  value: '',
+  key: 'trans_title',
+  language: 'all',
+  state: 'all',
+  start: 0,
+  count: 20,
+  timerange: []
+}
 
 export default {
   data () {
     return {
-      params: {
-        value: '',
-        key: 'trans_title',
-        language: 'all',
-        state: 'all',
-        start: 0,
-        count: 20,
-        timerange: []
-      },
+      params: defaultData,
       listData: {
         data: [],
         total: 0
@@ -149,6 +151,11 @@ export default {
       this.params.start = index
       this.fetch()
     },
+    clearOptions () {
+      this.params.start = 0
+      this.params.value = ''
+      this.fetch()
+    },
     editState () {
       if (this.currentRow.state === '🚀') {
         this.currentRow.state = 'recommend'
@@ -192,7 +199,6 @@ export default {
       })
     },
     preFetch () {
-      console.log('preFetch')
       this.params.start = 0
       this.fetch()
     },
@@ -245,7 +251,7 @@ export default {
         } else if (el.state === 'deleted') {
           el.state = '❌'
         }
-        el.publishe_at = tools.moment(el.published)
+        el.publishe_at = tools.utc(el.published)
       })
     },
     '$route.query': function () {
@@ -271,7 +277,7 @@ function ws (_this) {
   }
   socket.onmessage = function incoming (data) {
     console.log('onmessage')
-    console.log(data.data)
+    // console.log(data.data)
     const json = JSON.parse(data.data)
     if (json.channel === 'locked') {
       _this.locked = json.data
@@ -319,6 +325,7 @@ function checkLock (_this) {
     width 100%
   .pagination
     margin-top 10px
+    margin-bottom 40px
   .deleted
     color rgb(255, 102, 96)
   .language-icon
@@ -339,6 +346,10 @@ function checkLock (_this) {
     width 20px
     height 20px
     vertical-align middle
+  img
+    cursor pointer
+  .clear
+    margin-left 10px
 
 
 
