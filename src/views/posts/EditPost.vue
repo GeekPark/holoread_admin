@@ -2,8 +2,8 @@
 #edit-post.admin(v-bind:class="{ fullPage: fullPage }")
   .title
     h1(v-if='!fullPage') {{$route.meta.title}}
-    h2.full(@click='fullPage = !fullPage') 全屏编辑
-
+    el-button.full(@click='fullPage = !fullPage') 全屏编辑
+    el-button.translate(type='info', @click='handleTranslate') {{translateText}}
   el-form(ref='form', :model='form', label-width='80px', :rules="rules", label-position='top')
     el-form-item(:label='fullPage ? "": "参考标题"', prop='edited_title')
       .reference
@@ -53,6 +53,7 @@ export default {
         source: '',
         state: ''
       },
+      translateText: '重新翻译',
       options: this.$store.state.articleStates,
       fullPage: false,
       rules: {
@@ -74,6 +75,16 @@ export default {
     },
     close () {
       window.close()
+    },
+    handleTranslate () {
+      this.translateText = '翻译中'
+      api.post('admin/translate', {url: this.form.url}).then(result => {
+        this.translateText = '重新翻译成功'
+        location.reload()
+      }).catch(e => {
+        this.translateText = '翻译失败'
+        console.log(e)
+      })
     }
   },
   mounted () {
