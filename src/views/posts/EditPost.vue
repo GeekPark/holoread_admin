@@ -78,7 +78,7 @@ export default {
     },
     handleTranslate () {
       this.translateText = '翻译中'
-      api.post('admin/translate', {url: this.form.url}).then(result => {
+      api.post('admin/translate', qs.stringify({url: this.form.url}), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(result => {
         this.translateText = '重新翻译成功'
         location.reload()
       }).catch(e => {
