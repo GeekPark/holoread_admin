@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
-import Index from './views/Index.vue'
+// import Index from './views/Index.vue'
 import Errors from './views/Errors.vue'
 import Login from './views/Login.vue'
 
@@ -10,6 +10,7 @@ import EditPost from './views/posts/EditPost.vue'
 
 import Accesses from './views/logs/Accesses.vue'
 import TranslateLog from './views/logs/TranslateLog.vue'
+import TranslateCheck from './views/logs/TranslateCheck.vue'
 
 import Users from './views/users/Users.vue'
 import EditUser from './views/users/EditUser.vue'
@@ -20,9 +21,7 @@ const router = new VueRouter({
   mode: 'history',
   routes: [
     { path: '/',
-      name: 'index',
-      component: Index,
-      meta: {title: '首页'}
+      redirect: '/posts'
     },
     { path: '/login',
       name: 'login',
@@ -50,6 +49,11 @@ const router = new VueRouter({
       name: 'translatelog',
       component: TranslateLog,
       meta: {title: '翻译日志'}
+    },
+    { path: '/translate/check',
+      name: 'TranslateCheck',
+      component: TranslateCheck,
+      meta: {title: '翻译检查'}
     },
 
     { path: '/posts',
