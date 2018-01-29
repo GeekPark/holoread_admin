@@ -35,7 +35,7 @@
 
 <script>
 import api from '../../stores/api'
-import config from '../../config.js'
+import config from '../../config'
 import qs from 'qs'
 import mousetrap from 'mousetrap'
 export default {
@@ -145,7 +145,7 @@ function updatePost (_this) {
   api.put(`admin/articles/${_this.$route.query.id}`, qs.stringify(_this.form), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
   .then((result) => {
     _this.$notify.success('success')
-    setTimeout(() => { window.close() }, 500)
+    setTimeout(() => { window.close() }, 1000)
   }).catch((err) => {
     _this.$notify.error(err)
   })

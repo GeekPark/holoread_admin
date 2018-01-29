@@ -67,7 +67,7 @@
 <script>
 import api from 'stores/api'
 import tools from '../../tools'
-import config from '../../config.js'
+import config from '../../config'
 
 const url = 'admin/articles'
 const defaultData = {

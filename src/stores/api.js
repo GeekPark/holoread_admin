@@ -1,4 +1,4 @@
-import config from '../config'
+import config from '../config/index.js'
 import router from '../routers.js'
 
 // window.axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
