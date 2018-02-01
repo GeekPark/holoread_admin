@@ -3,7 +3,7 @@
   .title
     h1(v-if='!fullPage') {{$route.meta.title}}
     el-button.full(@click='fullPage = !fullPage') 全屏编辑
-    el-button.translate(type='info', @click='handleTranslate') {{translateText}}
+    el-button.translate(type='info', @click='handleTranslate', v-if='!form.is_cn') {{translateText}}
   el-form(ref='form', :model='form', label-width='80px', :rules="rules", label-position='top')
     el-form-item(:label='fullPage ? "": "参考标题"', prop='edited_title')
       .reference
@@ -13,7 +13,9 @@
     el-form-item.editor-form-item(:label='fullPage ? "": "显示正文"')
       .reference.rereference-content
         .cn.content(v-html='form.origin_content')
-        veditor#veditor
+        veditor#veditor(v-if='!form.is_cn')
+        .rereference-content-iframe(v-else)
+          iframe(:src="form.url" width="100%" height="100%", style="position: absolute; top:0;left:0; height: 100; z-index: 100;")
 
     el-form-item(label='机器翻译', required, v-if='!fullPage')
       el-input(placeholder='请输入标题 必填', v-model='form.trans_title', :disabled="true")
@@ -51,7 +53,8 @@ export default {
         summary: '',
         url: '',
         source: '',
-        state: ''
+        state: '',
+        is_cn: false
       },
       translateText: '重新翻译',
       options: this.$store.state.articleStates,
@@ -253,6 +256,14 @@ function delHtmlTag (str) {
     min-height 200px
     max-height 400px
     overflow-y scroll
+ .rereference-content-iframe
+    position absolute
+    top 0
+    left 0
+    width 100%
+    height 550px
+    background #fff
+    z-index 100
 
 .fullPage
   width calc(100% - 40px)
@@ -277,6 +288,8 @@ function delHtmlTag (str) {
   //   height 100% !important
 
   .rereference-content
+    position relative
+
     height 100% !important
     .content
       height 100%
