@@ -159,10 +159,17 @@ function getPost (_this) {
       data.edited_title = data.trans_title
       data.edited_content = data.trans_content
     }
+    if ((data.trans_title === null || data.trans_title === undefined || data.trans_title === '') && data.is_cn === true) {
+      data.trans_title = data.origin_title
+      data.trans_content = ''
+      data.edited_title = data.origin_title
+      data.edited_content = ''
+    }
     if (data.summary === '' || data.summary === null || data.summary === undefined) {
       const content = delHtmlTag(data.edited_content)
       data.summary = content.length >= 100 ? content.substring(0, 100) : content
     }
+    console.log(data)
     Object.keys(_this.form).forEach(key => {
       _this.form[key] = data[key]
     })
