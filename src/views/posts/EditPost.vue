@@ -16,7 +16,7 @@
         .cn.content(v-html='form.origin_content')
         veditor#veditor(v-if='!form.is_cn')
         .rereference-content-iframe(v-else)
-          iframe(:src="form.url" width="100%" height="100%", style="position: absolute; top:0;left:0; height: 100; z-index: 100;", v-if='isUrlContent')
+          iframe(:src='form.url.replace("http://", "https://")' width="100%" height="100%", style="position: absolute; top:0;left:0; height: 100; z-index: 100;", v-if='isUrlContent')
           div(v-else, v-html='urlcontent').urlcontent
 
     el-form-item(label='机器翻译', required, v-if='!fullPage')
