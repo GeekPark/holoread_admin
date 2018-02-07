@@ -3,12 +3,14 @@
   .title
     h1(v-if='!fullPage') {{$route.meta.title}}
     el-button.full(@click='fullPage = !fullPage') 全屏编辑
-    el-button.translate(type='info', @click='handleTranslate', v-if='!form.is_cn') {{translateText}}
-    el-button.full(@click='isUrlContent = !isUrlContent') 看不到正文?
+    el-button.translate(type='info', @click='handleTranslate', v-if='!form.is_cn && !fullPage') {{translateText}}
+    el-button.full(@click='isUrlContent = !isUrlContent' v-if='!fullPage') 看不到正文?
   el-form(ref='form', :model='form', label-width='80px', :rules="rules", label-position='top')
+    el-form-item(label='URL', v-if='!fullPage')
+      a(:href='form.url', target='_blank') {{form.url}}
     el-form-item(:label='fullPage ? "": "参考标题"', prop='edited_title')
       .reference
-        span.cn.title {{form.origin_title}}
+        el-input.cn.title(v-model='form.origin_title')
         el-input.en.title(placeholder='请输入标题 必填', v-model='form.edited_title')
 
     el-form-item.editor-form-item(:label='fullPage ? "": "显示正文"')
@@ -27,12 +29,9 @@
       el-input(type='textarea', placeholder='', v-model='form.summary')
     el-form-item(label='Source', required, v-if='!fullPage')
       el-input(placeholder='', v-model='form.source')
-    el-form-item(label='URL', required, v-if='!fullPage')
-      el-input(placeholder='', v-model='form.url')
     el-form-item(label='状态', required, v-if='!fullPage')
-      el-select(v-model='form.state', placeholder='请选择')
-        el-option(v-for='item in options', :label='item.label', :value='item.value', :key='item.value')
-    el-form-item(label='', v-if='!fullPage')
+      el-radio(v-for='item in options', :key='item.value', class="radio", v-model="form.state", :label='item.value') {{item.label}}
+    el-form-item.actions(label='', v-if='!fullPage')
       el-button(type='primary', @click='onSubmit') 发布
       el-button(type='danger', @click="close") 关闭窗口
 </template>
@@ -226,6 +225,9 @@ function delHtmlTag (str) {
 #edit-post
   padding-left 10px
   padding-right 10px
+
+.actions
+  padding-bottom 100px
 
 .full
   cursor pointer
