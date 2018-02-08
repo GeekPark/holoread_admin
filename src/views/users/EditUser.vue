@@ -5,7 +5,7 @@
   el-form(:model='form', label-width='100px')
     img(:src='form.headimgurl')
     el-form-item(label='用户级别*')
-      el-select(v-model='form.permission', placeholder='请选择权限', size="large" multiple)
+      el-select(v-model='form.permission', placeholder='请选择权限', size="large", multiple)
         el-option(v-for='item in options',
                   :label='item.label',
                   :value='item.value',
@@ -81,6 +81,7 @@ function update (_this = {}) {
   api.put(`/admin/users/${_this.id}`, _this.form).then((result) => {
     _this.loading = false
     _this.$notify.success('success')
+    _this.$router.push('/users')
     // window.close()
   }).catch((err) => {
     _this.$notify.error(err.toString())

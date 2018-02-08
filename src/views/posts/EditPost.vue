@@ -2,18 +2,24 @@
 #edit-post.admin(v-bind:class="{ fullPage: fullPage }")
   .title
     h1(v-if='!fullPage') {{$route.meta.title}}
-    h2.full(@click='fullPage = !fullPage') 全屏编辑
-
+    el-button.full(@click='fullPage = !fullPage') 全屏编辑
+    el-button.translate(type='info', @click='handleTranslate', v-if='!form.is_cn && !fullPage') {{translateText}}
+    el-button.full(@click='isUrlContent = !isUrlContent' v-if='!fullPage') 看不到正文?
   el-form(ref='form', :model='form', label-width='80px', :rules="rules", label-position='top')
+    el-form-item(label='URL', v-if='!fullPage')
+      a(:href='form.url', target='_blank') {{form.url}}
     el-form-item(:label='fullPage ? "": "参考标题"', prop='edited_title')
       .reference
-        span.cn.title {{form.origin_title}}
+        el-input.cn.title(v-model='form.origin_title')
         el-input.en.title(placeholder='请输入标题 必填', v-model='form.edited_title')
 
     el-form-item.editor-form-item(:label='fullPage ? "": "显示正文"')
       .reference.rereference-content
         .cn.content(v-html='form.origin_content')
-        veditor#veditor
+        veditor#veditor(v-if='!form.is_cn')
+        .rereference-content-iframe(v-else)
+          iframe(:src='form.url.replace("http://", "https://")' width="100%" height="100%", style="position: absolute; top:0;left:0; height: 100; z-index: 100;", v-if='isUrlContent')
+          div(v-else, v-html='urlcontent').urlcontent
 
     el-form-item(label='机器翻译', required, v-if='!fullPage')
       el-input(placeholder='请输入标题 必填', v-model='form.trans_title', :disabled="true")
@@ -23,19 +29,16 @@
       el-input(type='textarea', placeholder='', v-model='form.summary')
     el-form-item(label='Source', required, v-if='!fullPage')
       el-input(placeholder='', v-model='form.source')
-    el-form-item(label='URL', required, v-if='!fullPage')
-      el-input(placeholder='', v-model='form.url')
     el-form-item(label='状态', required, v-if='!fullPage')
-      el-select(v-model='form.state', placeholder='请选择')
-        el-option(v-for='item in options', :label='item.label', :value='item.value', :key='item.value')
-    el-form-item(label='', v-if='!fullPage')
+      el-radio(v-for='item in options', :key='item.value', class="radio", v-model="form.state", :label='item.value') {{item.label}}
+    el-form-item.actions(label='', v-if='!fullPage')
       el-button(type='primary', @click='onSubmit') 发布
       el-button(type='danger', @click="close") 关闭窗口
 </template>
 
 <script>
 import api from '../../stores/api'
-import config from '../../config.js'
+import config from '../../config'
 import qs from 'qs'
 import mousetrap from 'mousetrap'
 export default {
@@ -51,8 +54,12 @@ export default {
         summary: '',
         url: '',
         source: '',
-        state: ''
+        state: '',
+        is_cn: false
       },
+      isUrlContent: true,
+      urlcontent: '',
+      translateText: '重新翻译',
       options: this.$store.state.articleStates,
       fullPage: false,
       rules: {
@@ -74,6 +81,16 @@ export default {
     },
     close () {
       window.close()
+    },
+    handleTranslate () {
+      this.translateText = '翻译中'
+      api.post('admin/translate', qs.stringify({url: this.form.url}), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(result => {
+        this.translateText = '重新翻译成功'
+        location.reload()
+      }).catch(e => {
+        this.translateText = '翻译失败'
+        console.log(e)
+      })
     }
   },
   mounted () {
@@ -134,7 +151,7 @@ function updatePost (_this) {
   api.put(`admin/articles/${_this.$route.query.id}`, qs.stringify(_this.form), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
   .then((result) => {
     _this.$notify.success('success')
-    setTimeout(() => { window.close() }, 500)
+    setTimeout(() => { window.close() }, 1000)
   }).catch((err) => {
     _this.$notify.error(err)
   })
@@ -148,14 +165,23 @@ function getPost (_this) {
       data.edited_title = data.trans_title
       data.edited_content = data.trans_content
     }
+    if ((data.trans_title === null || data.trans_title === undefined || data.trans_title === '') && data.is_cn === true) {
+      data.trans_title = data.origin_title
+      data.trans_content = ''
+      data.edited_title = data.origin_title
+      data.edited_content = ''
+    }
     if (data.summary === '' || data.summary === null || data.summary === undefined) {
       const content = delHtmlTag(data.edited_content)
       data.summary = content.length >= 100 ? content.substring(0, 100) : content
     }
+    console.log(data)
     Object.keys(_this.form).forEach(key => {
       _this.form[key] = data[key]
     })
-
+    api.post('admin/urlcontent', qs.stringify({url: _this.form.url}), {headers: {'Content-Type': 'application/x-www-form-urlencoded'}}).then(result => {
+      _this.urlcontent = result.data
+    })
     addContent(_this)
     ws(_this)
   }).catch((err) => {
@@ -200,6 +226,9 @@ function delHtmlTag (str) {
   padding-left 10px
   padding-right 10px
 
+.actions
+  padding-bottom 100px
+
 .full
   cursor pointer
   color #9DC282
@@ -235,6 +264,17 @@ function delHtmlTag (str) {
     min-height 200px
     max-height 400px
     overflow-y scroll
+ .rereference-content-iframe
+    position absolute
+    top 0
+    left 0
+    width 100%
+    height 550px
+    background #fff
+    z-index 100
+ .urlcontent
+    height 100%
+    overflow-y scroll
 
 .fullPage
   width calc(100% - 40px)
@@ -259,6 +299,8 @@ function delHtmlTag (str) {
   //   height 100% !important
 
   .rereference-content
+    position relative
+
     height 100% !important
     .content
       height 100%

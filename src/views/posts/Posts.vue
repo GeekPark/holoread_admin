@@ -23,15 +23,20 @@
              @keyup.enter.native='preFetch')
   .timerange
     el-date-picker(v-model='params.timerange', type='datetimerange', :picker-options='pickerOptions', placeholder='选择时间范围', align='right', @change='preFetch')
+    el-button(@click='clearOptions').clear 重置
+    el-radio(class="radio", v-model="is_cn_display", label="0") 英文显示
+    el-radio(class="radio", v-model="is_cn_display", label="1") 中文显示
 
   el-table(:data='listData.data', :row-class-name="tableRowClassName", @selection-change="handleSelectionChange", border)
     el-table-column(type="selection", width="55")
     el-table-column(prop='edited_title', label='标题')
       template(scope='scope')
-        div(@click='handleEdit(scope.row)') {{scope.row.edited_title}}
+        div(@click='handleEdit(scope.row)') {{is_cn_display === "1" ? scope.row.edited_title : scope.row.origin_title}}
     el-table-column(label='来源', width="90")
       template(scope='scope')
-        img.source(:src='qiniuUrl(scope.row.source)', :alt='scope.row.source')
+        img.source(:src='qiniuUrl(scope.row.source)',
+                   :alt='scope.row.source',
+                   @click.stop="params.key='source'; params.value=scope.row.source; preFetch()")
     el-table-column(label='状态', width="70")
       template(scope='scope')
         span(v-bind:class="{deleted: scope.row.state === 'deleted'}") {{scope.row.state}}
@@ -51,7 +56,7 @@
     el-button(@click.stop="handleDestroyList", type='danger', v-if='multipleSelection.length') 删除所选
   .pagination
     el-pagination(@current-change='handleCurrentChange',
-                :current-page='params.start',
+                :current-page='currentPage',
                 :page-size='params.count',
                 layout='total, prev, pager, next',
                 :total='listData.total')
@@ -66,26 +71,28 @@
 <script>
 import api from 'stores/api'
 import tools from '../../tools'
-import config from '../../config.js'
+import config from '../../config'
 
 const url = 'admin/articles'
+const defaultData = {
+  value: '',
+  key: 'trans_title',
+  language: 'all',
+  state: 'all',
+  count: 20,
+  timerange: []
+}
 
 export default {
   data () {
     return {
-      params: {
-        value: '',
-        key: 'trans_title',
-        language: 'all',
-        state: 'all',
-        start: 0,
-        count: 20,
-        timerange: []
-      },
+      params: defaultData,
       listData: {
         data: [],
         total: 0
       },
+      is_cn_display: '0',
+      currentPage: 1,
       multipleSelection: [],
       locked: [],
       loading: false,
@@ -146,7 +153,12 @@ export default {
       window.open(`/posts/edit?id=${el._id}`)
     },
     handleCurrentChange (index) {
-      this.params.start = index
+      this.currentPage = index
+      this.fetch()
+    },
+    clearOptions () {
+      this.currentPage = 1
+      this.params.value = ''
       this.fetch()
     },
     editState () {
@@ -192,20 +204,20 @@ export default {
       })
     },
     preFetch () {
-      console.log('preFetch')
-      this.params.start = 0
+      this.currentPage = 1
       this.fetch()
     },
     fetch () {
       this.loading = true
       const params = Object.assign(this.$route.query, this.params)
+      params.start = this.currentPage
       if (params.timerange.length <= 1) {
         delete params.timerange
       } else {
         params.timestart = Date.parse(params.timerange[0]).toString().substring(0, 10)
         params.timeend = Date.parse(params.timerange[1]).toString().substring(0, 10)
       }
-      console.log(params)
+      console.log(JSON.stringify(params))
 
       api.get(url, {params: params}).then((result) => {
         this.loading = false
@@ -245,14 +257,14 @@ export default {
         } else if (el.state === 'deleted') {
           el.state = '❌'
         }
-        el.publishe_at = tools.moment(el.published)
+        el.publishe_at = tools.utc(el.published)
       })
     },
     '$route.query': function () {
       setTimeout(() => { this.fetch() }, 100)
     }
   },
-  mounted () {
+  beforeMount () {
     this.fetch()
     ws(this)
     setInterval(() => {
@@ -271,7 +283,7 @@ function ws (_this) {
   }
   socket.onmessage = function incoming (data) {
     console.log('onmessage')
-    console.log(data.data)
+    // console.log(data.data)
     const json = JSON.parse(data.data)
     if (json.channel === 'locked') {
       _this.locked = json.data
@@ -319,6 +331,7 @@ function checkLock (_this) {
     width 100%
   .pagination
     margin-top 10px
+    margin-bottom 40px
   .deleted
     color rgb(255, 102, 96)
   .language-icon
@@ -339,6 +352,10 @@ function checkLock (_this) {
     width 20px
     height 20px
     vertical-align middle
+  img
+    cursor pointer
+  .clear
+    margin 0 10px
 
 
 

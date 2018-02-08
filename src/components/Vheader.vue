@@ -1,7 +1,7 @@
 <template lang="jade">
 #vheader
   router-link(to="/")
-      h1 &nbsp &nbsp GEEKPARK
+      h1 &nbsp &nbsp HOLOREAD
   p.socket {{socketMsg}} {{wsState}}
   el-menu.el-menu-demo(theme='light',
                        :default-active='activeIndex',

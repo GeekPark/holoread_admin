@@ -4,3 +4,4 @@ docs/_book
 dist/*
 config.js
 .vscode
+config.yaml

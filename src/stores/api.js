@@ -1,11 +1,11 @@
-import config from '../config'
+import config from '../config/index.js'
 import router from '../routers.js'
 
 // window.axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
 
 const request = window.axios.create({
   baseURL: `${config.host}/api`,
-  timeout: 30000,
+  timeout: 1000000,
   withCredentials: true, // 允许跨域 cookie
   headers: { 'X-Requested-With': 'XMLHttpRequest' }
 })
