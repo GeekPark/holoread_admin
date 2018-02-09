@@ -47,7 +47,7 @@
         span(v-if='scope.row.lock') 🔓
     el-table-column(label='时间', width="180")
       template(scope='scope')
-        span {{params.sortby === "published" ? tools.utc(scope.row.published) : tools.utc(scope.row.createdAt)}}
+        span {{params.sortby === "published" ? tools.utc(scope.row.published) : tools.moment(scope.row.createdAt)}}
     el-table-column(label='操作', width='190')
       template(scope='scope')
         el-button(size='small',
