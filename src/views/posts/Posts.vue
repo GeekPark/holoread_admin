@@ -26,6 +26,8 @@
     el-button(@click='clearOptions').clear 重置
     el-radio(class="radio", v-model="is_cn_display", label="0") 英文显示
     el-radio(class="radio", v-model="is_cn_display", label="1") 中文显示
+    el-radio(class="radio", v-model="params.sortby", label="published") 发布时间
+    el-radio(class="radio", v-model="params.sortby", label="createdAt") 爬取时间
 
   el-table(:data='listData.data', :row-class-name="tableRowClassName", @selection-change="handleSelectionChange", border)
     el-table-column(type="selection", width="55")
@@ -43,7 +45,9 @@
     el-table-column(label='锁定', width="70")
       template(scope='scope')
         span(v-if='scope.row.lock') 🔓
-    el-table-column(prop='publishe_at', label='创建时间', width="170")
+    el-table-column(label='时间', width="180")
+      template(scope='scope')
+        span {{params.sortby === "published" ? tools.utc(scope.row.published) : tools.utc(scope.row.createdAt)}}
     el-table-column(label='操作', width='190')
       template(scope='scope')
         el-button(size='small',
@@ -80,12 +84,14 @@ const defaultData = {
   language: 'all',
   state: 'all',
   count: 20,
+  sortby: 'published',
   timerange: []
 }
 
 export default {
   data () {
     return {
+      tools: tools,
       params: defaultData,
       listData: {
         data: [],
@@ -257,7 +263,6 @@ export default {
         } else if (el.state === 'deleted') {
           el.state = '❌'
         }
-        el.publishe_at = tools.utc(el.published)
       })
     },
     '$route.query': function () {
