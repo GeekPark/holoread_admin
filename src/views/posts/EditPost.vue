@@ -25,7 +25,7 @@
       p.trans_content(v-html='form.trans_content', v-if='!fullPage')
     el-form-item(label='摘要', v-if='!fullPage')
       el-input(type='textarea', placeholder='', v-model='form.summary')
-      span(style='float: right; margin-right: 10px;') {{form.summary.length}} 个字
+      span(style='float: right; margin-right: 10px;') {{form.summary ? form.summary.length: 0}} 个字
     el-form-item(label='Source', required, v-if='!fullPage')
       el-input(placeholder='', v-model='form.source')
     el-form-item(label='状态', required, v-if='!fullPage')
