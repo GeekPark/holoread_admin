@@ -208,9 +208,9 @@ function ws (_this) {
   }
 }
 
-function delHtmlTag (str) {
-  return str.replace(/<[^>]+>/g, '')
-}
+// function delHtmlTag (str) {
+//   return str.replace(/<[^>]+>/g, '')
+// }
 </script>
 
 <style lang="stylus">
