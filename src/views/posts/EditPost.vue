@@ -170,11 +170,6 @@ function getPost (_this) {
       data.edited_title = data.origin_title
       data.edited_content = ''
     }
-    if (data.summary === '' || data.summary === null || data.summary === undefined) {
-      const content = delHtmlTag(data.edited_content)
-      data.summary = content.length >= 100 ? content.substring(0, 100) : content
-    }
-    console.log(data)
     Object.keys(_this.form).forEach(key => {
       _this.form[key] = data[key]
     })
