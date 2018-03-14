@@ -7,6 +7,7 @@ import Login from './views/Login.vue'
 
 import Posts from './views/posts/Posts.vue'
 import EditPost from './views/posts/EditPost.vue'
+import AddPost from './views/posts/AddPost.vue'
 
 import Accesses from './views/logs/Accesses.vue'
 import TranslateLog from './views/logs/TranslateLog.vue'
@@ -65,6 +66,11 @@ const router = new VueRouter({
       name: 'posts-edit',
       component: EditPost,
       meta: {title: '编辑文章'}
+    },
+    { path: '/posts/add',
+      name: 'posts-add',
+      component: AddPost,
+      meta: {title: '增加文章'}
     },
 
     { path: '*',

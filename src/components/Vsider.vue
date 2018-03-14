@@ -11,6 +11,10 @@
           template(slot='title')
             i.el-icon-edit
             | 文章列表
+        el-menu-item(index='/posts/add')
+          template(slot='title')
+            i.el-icon-edit
+            | 添加文章
         el-menu-item(index='/translate/check')
           template(slot='title')
             i.el-icon-information
