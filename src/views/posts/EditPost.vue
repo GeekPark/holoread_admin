@@ -4,7 +4,6 @@
     h1(v-if='!fullPage') {{$route.meta.title}}
     el-button.full(@click='fullPage = !fullPage') 全屏编辑
     el-button.translate(type='info', @click='handleTranslate', v-if='!form.is_cn && !fullPage') {{translateText}}
-    el-button.full(@click='isUrlContent = !isUrlContent' v-if='!fullPage') 看不到正文?
   el-form(ref='form', :model='form', label-width='80px', :rules="rules", label-position='top')
     el-form-item(label='URL', v-if='!fullPage')
       a(:href='form.url', target='_blank') {{form.url}}
@@ -18,8 +17,7 @@
         .cn.content(v-html='form.origin_content')
         veditor#veditor(v-if='!form.is_cn')
         .rereference-content-iframe(v-else)
-          iframe(:src='form.url.replace("http://", "https://")' width="100%" height="100%", style="position: absolute; top:0;left:0; height: 100; z-index: 100;", v-if='isUrlContent')
-          div(v-else, v-html='urlcontent').urlcontent
+          div(v-html='urlcontent').urlcontent
 
     el-form-item(label='机器翻译', required, v-if='!fullPage')
       el-input(placeholder='请输入标题 必填', v-model='form.trans_title', :disabled="true")
@@ -27,6 +25,7 @@
       p.trans_content(v-html='form.trans_content', v-if='!fullPage')
     el-form-item(label='摘要', v-if='!fullPage')
       el-input(type='textarea', placeholder='', v-model='form.summary')
+      span(style='float: right; margin-right: 10px;') {{form.summary ? form.summary.length: 0}} 个字
     el-form-item(label='Source', required, v-if='!fullPage')
       el-input(placeholder='', v-model='form.source')
     el-form-item(label='状态', required, v-if='!fullPage')
@@ -171,11 +170,6 @@ function getPost (_this) {
       data.edited_title = data.origin_title
       data.edited_content = ''
     }
-    if (data.summary === '' || data.summary === null || data.summary === undefined) {
-      const content = delHtmlTag(data.edited_content)
-      data.summary = content.length >= 100 ? content.substring(0, 100) : content
-    }
-    console.log(data)
     Object.keys(_this.form).forEach(key => {
       _this.form[key] = data[key]
     })
@@ -214,9 +208,9 @@ function ws (_this) {
   }
 }
 
-function delHtmlTag (str) {
-  return str.replace(/<[^>]+>/g, '')
-}
+// function delHtmlTag (str) {
+//   return str.replace(/<[^>]+>/g, '')
+// }
 </script>
 
 <style lang="stylus">
