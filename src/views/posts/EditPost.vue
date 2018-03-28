@@ -23,7 +23,7 @@
       el-input(placeholder='请输入标题 必填', v-model='form.trans_title', :disabled="true")
     el-form-item(label='机器翻译', required, v-if='!fullPage')
       p.trans_content(v-html='form.trans_content', v-if='!fullPage')
-    el-form-item(label='摘要', v-if='!fullPage')
+    el-form-item.summary(label='摘要', v-if='!fullPage')
       el-input(type='textarea', placeholder='', v-model='form.summary')
       span(style='float: right; margin-right: 10px;') {{form.summary ? form.summary.length: 0}} 个字
     el-form-item(label='Source', required, v-if='!fullPage')
@@ -214,6 +214,8 @@ function ws (_this) {
 </script>
 
 <style lang="stylus">
+.summary textarea
+    min-height 100px
 .w-e-text-container
   height 370px !important
 #edit-post
