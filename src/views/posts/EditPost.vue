@@ -215,6 +215,8 @@ function ws (_this) {
 </script>
 
 <style lang="stylus">
+.summary textarea
+    min-height 100px
 .w-e-text-container
   height 370px !important
 #edit-post
