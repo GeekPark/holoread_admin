@@ -17,13 +17,13 @@
         .cn.content(v-html='form.origin_content')
         veditor#veditor(v-if='!form.is_cn')
         .rereference-content-iframe(v-else)
-          div(v-html='urlcontent').urlcontent
-
+          div(v-html='urlcontent', v-if='form.source.indexOf(iframes) < 0').urlcontent
+          iframe(v-else, :src='form.url.replace("http://", "https://")' width="100%" height="100%", style="position: absolute; top:0;left:0; height: 100; z-index: 100;")
     el-form-item(label='机器翻译', required, v-if='!fullPage')
       el-input(placeholder='请输入标题 必填', v-model='form.trans_title', :disabled="true")
     el-form-item(label='机器翻译', required, v-if='!fullPage')
       p.trans_content(v-html='form.trans_content', v-if='!fullPage')
-    el-form-item(label='摘要', v-if='!fullPage')
+    el-form-item.summary(label='摘要', v-if='!fullPage')
       el-input(type='textarea', placeholder='', v-model='form.summary')
       span(style='float: right; margin-right: 10px;') {{form.summary ? form.summary.length: 0}} 个字
     el-form-item(label='Source', required, v-if='!fullPage')
@@ -43,6 +43,7 @@ import mousetrap from 'mousetrap'
 export default {
   data () {
     return {
+      iframes: ['36kr'],
       form: {
         edited_title: '',
         origin_title: 'nothing',
