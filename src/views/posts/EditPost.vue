@@ -3,6 +3,7 @@
   .title
     h1(v-if='!fullPage') {{$route.meta.title}}
     el-button.full(@click='fullPage = !fullPage') 全屏编辑
+    el-button.full(@click='isIframe = !isIframe') 启动iFrame
     el-button.translate(type='info', @click='handleTranslate', v-if='!form.is_cn && !fullPage') {{translateText}}
   el-form(ref='form', :model='form', label-width='80px', :rules="rules", label-position='top')
     el-form-item(label='URL', v-if='!fullPage')
@@ -17,8 +18,8 @@
         .cn.content(v-html='form.origin_content')
         veditor#veditor(v-if='!form.is_cn')
         .rereference-content-iframe(v-else)
-          div(v-html='urlcontent', v-if='form.source.indexOf(iframes) < 0').urlcontent
-          iframe(v-else, :src='form.url.replace("http://", "https://")' width="100%" height="100%", style="position: absolute; top:0;left:0; height: 100; z-index: 100;")
+          iframe(v-if='isIframe', :src='form.url.replace("http://", "https://")' width="100%" height="100%", style="position: absolute; top:0;left:0; height: 100; z-index: 100;")
+          div(v-html='urlcontent', v-else).urlcontent
     el-form-item(label='机器翻译', required, v-if='!fullPage')
       el-input(placeholder='请输入标题 必填', v-model='form.trans_title', :disabled="true")
     el-form-item(label='机器翻译', required, v-if='!fullPage')
@@ -43,7 +44,7 @@ import mousetrap from 'mousetrap'
 export default {
   data () {
     return {
-      iframes: ['36kr'],
+      isIframe: false,
       form: {
         edited_title: '',
         origin_title: 'nothing',
